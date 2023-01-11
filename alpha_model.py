@@ -1,4 +1,5 @@
 from build_connection import build_connection
+from data_grabber import real_time_data
 import datetime
 import pandas as pd
 
@@ -49,3 +50,7 @@ class CheckForOpportunity:
                   "sell_signal": self.sell_signal}
 
         return output
+
+    def short_term_trend(self):
+        data = real_time_data()
+        return data

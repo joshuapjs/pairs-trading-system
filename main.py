@@ -1,4 +1,4 @@
 import alpha_model
 
 AAPLE = alpha_model.CheckForOpportunity("AAPL.US", False, False)
-print(AAPLE.get_technical_trend())
+print(AAPLE.short_term_trend())
