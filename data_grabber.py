@@ -11,7 +11,7 @@ api_key = os.environ["API_EOD"]
 
 
 # Infinite loop waiting for WebSocket data
-def real_time_data():
+def init_real_time():
 
     ask = []
     bid = []
@@ -22,7 +22,7 @@ def real_time_data():
     ws.send('{"action": "subscribe", "symbols": "TSLA"}')
 
     while True:
-        if len(ask) < 5:
+        if len(ask) < 10:
             result = ws.recv()
             result = json.loads(result)
             if len(result) > 2:
@@ -35,7 +35,34 @@ def real_time_data():
             ask.clear()
             bid.clear()
             timestamp.clear()
+            prices.index = prices["Time"]
+            del prices["Time"]
             return prices
+
+
+def real_time_data():
+
+    # Connect to WebSocket API and subscribe to trade feed for Ethereum and Bitcoin - will be replaced by stock prices
+    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/us-quote?api_token={api_key}")
+    ws.send('{"action": "subscribe", "symbols": "TSLA"}')
+
+    df = init_real_time().copy()
+
+    while True:
+        result = ws.recv()
+        result = json.loads(result)
+        if len(result) > 2:
+            while True:
+                result = ws.recv()
+                result = json.loads(result)
+                ask = result["ap"]
+                bid = result["bp"]
+                timestamp = datetime.datetime.fromtimestamp(result["t"] / 1000.0)
+                df.loc[timestamp] = [ask, bid]
+                if len(df.index) > 10:
+                    df.drop(index=df.index[0], axis=0, inplace=True)
+                print(df)
+                time.sleep(1)
 
 
 def intraday_data(symbol, start, end, interval="1m"):
@@ -56,10 +83,10 @@ def intraday_data(symbol, start, end, interval="1m"):
                                 f"&to={end_date}"
                                 f"&interval={interval}")
 
-    print(initial_resp)
     raw_data = initial_resp.text
     df = pd.read_csv(StringIO(raw_data))
-    print(df)
+    df["Timestamp"] = df["Timestamp"].apply(lambda x: datetime.datetime.fromtimestamp(x))
 
+    #Test: intraday_data("AAPL", datetime.datetime(2023, 1, 10, 15, 10, 0), datetime.datetime(2023, 1, 10, 16, 0, 0)))
 
-intraday_data("AAPL", datetime.datetime(2022, 1, 10, 15, 10, 0), datetime.datetime(2022, 1, 10, 16, 0, 0))
+    return df
