@@ -1,8 +1,4 @@
-import numpy as np
-
 from build_connection import build_connection
-from data_grabber import real_time_data
-from scipy import stats
 import datetime
 import pandas as pd
 
@@ -53,12 +49,3 @@ class CheckForOpportunity:
                   "sell_signal": self.sell_signal}
 
         return output
-
-    def short_term_trend(self):
-        data = real_time_data()
-        delta = (data.index - data.index[0])
-        days = delta.seconds
-        result = stats.linregress(days, data["Ask"])
-        print(result.slope)
-
-        return data

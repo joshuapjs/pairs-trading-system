@@ -1,6 +1,7 @@
 from websocket import create_connection
 import pandas as pd
 from io import StringIO
+from scipy import stats
 import requests
 import datetime
 import time
@@ -18,20 +19,20 @@ def init_real_time():
     timestamp = []
 
     # Connect to WebSocket API and subscribe to trade feed for Ethereum and Bitcoin - will be replaced by stock prices
-    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/us-quote?api_token={api_key}")
-    ws.send('{"action": "subscribe", "symbols": "TSLA"}')
+    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/crypto?api_token={api_key}")
+    ws.send('{"action": "subscribe", "symbols": "ETH-USD"}')
 
     while True:
         if len(ask) < 10:
             result = ws.recv()
             result = json.loads(result)
             if len(result) > 2:
-                ask.append(result["ap"])
-                bid.append(result["bp"])
+                ask.append(result["p"])
+                #bid.append(result["bp"])
                 timestamp.append(datetime.datetime.fromtimestamp(result["t"]/1000.0))
                 time.sleep(1)
         else:
-            prices = pd.DataFrame({"Ask": ask, "Bid": bid, "Time": timestamp})
+            prices = pd.DataFrame({"Ask": ask, "Time": timestamp})
             ask.clear()
             bid.clear()
             timestamp.clear()
@@ -43,8 +44,8 @@ def init_real_time():
 def real_time_data():
 
     # Connect to WebSocket API and subscribe to trade feed for Ethereum and Bitcoin - will be replaced by stock prices
-    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/us-quote?api_token={api_key}")
-    ws.send('{"action": "subscribe", "symbols": "TSLA"}')
+    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/crypto?api_token={api_key}")
+    ws.send('{"action": "subscribe", "symbols": "ETH-USD"}')
 
     df = init_real_time().copy()
 
@@ -55,15 +56,15 @@ def real_time_data():
             while True:
                 result = ws.recv()
                 result = json.loads(result)
-                ask = result["ap"]
-                bid = result["bp"]
+                ask = result["p"]
+                #bid = result["bp"]
                 timestamp = datetime.datetime.fromtimestamp(result["t"] / 1000.0)
-                df.loc[timestamp] = [ask, bid]
-                if len(df.index) > 10:
+                df.loc[timestamp] = [ask]
+                if len(df["Ask"]) > 10:
                     df.drop(index=df.index[0], axis=0, inplace=True)
-                print(df)
+                result = stats.linregress(range(len(df["Ask"])), df["Ask"].astype(float))
+                print(result.slope)
                 time.sleep(1)
-
 
 def intraday_data(symbol, start, end, interval="1m"):
     """
