@@ -1,4 +1,6 @@
-import data_grabber
+import alpha_model
 
-
-data = data_grabber.real_time_data()
+AAPL = alpha_model.CheckForOpportunity("AAPL")
+print(AAPL.get_technical_trend())
+AAPL.get_current_trend()
+print("Sell Signal:", AAPL.sell_signal, "Buy Signal:", AAPL.buy_signal)

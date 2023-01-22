@@ -1,24 +1,5 @@
-from build_connection import build_connection
-import datetime
-import pandas as pd
-
-
-# Calculating three different dates for defining the relevant lengths of the series
-last_day = datetime.date.today()
-start_short_period = last_day - datetime.timedelta(days=7)
-start_long_period = last_day - datetime.timedelta(days=200)
-
-
-# Method to request stock prices for a specific period
-def get_data(symbol, current_date):
-    client = build_connection()
-    prices = client.get_prices_eod(symbol,
-                                   period="d",
-                                   order="a",
-                                   from_=current_date,
-                                   to=last_day)
-
-    return pd.DataFrame(prices).set_index("date")
+from scipy import stats
+import data_collector
 
 
 # Class to create signals for buying or selling a stock
@@ -35,8 +16,8 @@ class CheckForOpportunity:
 
 # Method to set a buy or sell signal depending on the kind of trend
     def get_technical_trend(self):
-        long_period = get_data(self.symbol, start_long_period)
-        short_period = long_period[str(start_short_period):]
+        long_period = data_collector.close_data(self.symbol, data_collector.start_long_period)
+        short_period = long_period[str(data_collector.start_short_period):]
         long_average = long_period["adjusted_close"].mean()
         short_average = short_period["adjusted_close"].mean()
 
@@ -49,3 +30,16 @@ class CheckForOpportunity:
                   "sell_signal": self.sell_signal}
 
         return output
+
+    def get_current_trend(self):
+        data = data_collector.init_real_time(self.symbol)
+
+        if "Ask" in data.columns:
+            current_regression = stats.linregress(range(len(data["Ask"])), data["Ask"].astype(float))
+
+            if current_regression.slope > 0:
+                self.buy_signal = True
+                self.buy_signal = False
+            else:
+                self.sell_signal = True
+                self.buy_signal = False
