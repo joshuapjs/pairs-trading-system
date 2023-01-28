@@ -11,7 +11,7 @@ import os
 
 api_key = os.environ["API_EOD"]
 
-# Calculating three different dates for defining the relevant lengths of the series
+# Calculating three different dates for defining the relevant lengths of the time series
 last_day = datetime.date.today()
 start_short_period = last_day - datetime.timedelta(days=7)
 start_long_period = last_day - datetime.timedelta(days=200)
@@ -25,15 +25,26 @@ def init_real_time(symbol):
     timestamp = []
 
     # Connect to WebSocket API and subscribe to trade feed for a stock symbol
-    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/crypto?api_token={api_key}")
+    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/us-quote?api_token={api_key}")
     ws.send(f'{{"action": "subscribe", "symbols": "{symbol}"}}')
 
-    # Collecting initial data points für real_time_data
+    # Collecting the first data points
+    while len(ask) < 1:
+        first_answer = ws.recv()
+        first_quote = json.loads(first_answer)
+        if len(first_quote) > 2:
+            ask.append(first_quote['ap'])
+            bid.append(first_quote['bp'])
+            timestamp.append(datetime.datetime.fromtimestamp(first_quote["t"]/1000.0))
+
+    # Collecting initial data for the real_time_data function
     while True:
-        if len(ask) < 10:
+        # Number of data points collected - should be as high as tolerable
+        # len(ask) < 50 must be equal to len(df["Ask"]) > 50 in the real_time_data function
+        if len(ask) < 50:
             result = ws.recv()
             result = json.loads(result)
-            if len(result) > 2:
+            if ask[-1] != result['ap']:
                 ask.append(result["ap"])
                 bid.append(result["bp"])
                 timestamp.append(datetime.datetime.fromtimestamp(result["t"]/1000.0))
@@ -51,7 +62,7 @@ def init_real_time(symbol):
 def real_time_data(symbol):
 
     # Connect to WebSocket API and subscribe to trade feed for Ethereum and Bitcoin - will be replaced by stock prices
-    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/crypto?api_token={api_key}")
+    ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/us-quote?api_token={api_key}")
     ws.send(f'{{"action": "subscribe", "symbols": "{symbol}"}}')
 
     df = init_real_time(symbol).copy()
@@ -69,7 +80,7 @@ def real_time_data(symbol):
                 timestamp = datetime.datetime.fromtimestamp(result["t"] / 1000.0)
                 df.loc[timestamp] = [ask, bid]
                 # If maximum number of rows are exceeded by one, one old datapoint will be deleted
-                if len(df["Ask"]) > 10:
+                if len(df["Ask"]) > 50:
                     df.drop(index=df.index[0], axis=0, inplace=True)
                 # Getting the trend by running a regression on the rolling datapoints
                 result = stats.linregress(range(len(df["Ask"])), df["Ask"].astype(float))
@@ -116,3 +127,5 @@ def close_data(symbol, current_date):
                                    to=last_day)
 
     return pd.DataFrame(prices).set_index("date")
+
+init_real_time('ETH-USD')
