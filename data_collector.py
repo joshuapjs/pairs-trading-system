@@ -18,7 +18,7 @@ start_long_period = last_day - datetime.timedelta(days=200)
 
 
 # Infinite loop waiting for WebSocket data
-def init_real_time(symbol):
+def collecting_initial_datapoints(symbol):
 
     ask = []
     bid = []
@@ -65,7 +65,7 @@ def real_time_data(symbol):
     ws = create_connection(f"wss://ws.eodhistoricaldata.com/ws/us-quote?api_token={api_key}")
     ws.send(f'{{"action": "subscribe", "symbols": "{symbol}"}}')
 
-    df = init_real_time(symbol).copy()
+    df = collecting_initial_datapoints(symbol).copy()
 
     # collecting additional data points for the symbol given
     while True:
@@ -127,5 +127,3 @@ def close_data(symbol, current_date):
                                    to=last_day)
 
     return pd.DataFrame(prices).set_index("date")
-
-init_real_time('ETH-USD')

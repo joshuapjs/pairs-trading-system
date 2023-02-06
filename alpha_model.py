@@ -2,8 +2,8 @@ from scipy import stats
 import data_collector
 
 
-# Class to create signals for buying or selling a stock
-class CheckForOpportunity:
+# Class to create signals for buying or selling a stock according to the trend
+class TrendOfInstrument:
 
     def __init__(self,
                  symbol,
@@ -32,7 +32,7 @@ class CheckForOpportunity:
         return output
 
     def get_current_trend(self):
-        data = data_collector.init_real_time(self.symbol)
+        data = data_collector.collecting_initial_datapoints(self.symbol)
 
         if "Ask" in data.columns:
             current_regression = stats.linregress(range(len(data["Ask"])), data["Ask"].astype(float))
@@ -43,3 +43,8 @@ class CheckForOpportunity:
             else:
                 self.sell_signal = True
                 self.buy_signal = False
+
+        output = {"buy_signal": self.buy_signal,
+                  "sell_signal": self.sell_signal}
+
+        return output
