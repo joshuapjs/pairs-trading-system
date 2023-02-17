@@ -30,6 +30,3 @@ class Asset:
                   "sell_signal": self.sell_signal}
 
         return output
-
-#    def get_current_trend(self):
-
