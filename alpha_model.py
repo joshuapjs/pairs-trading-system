@@ -3,7 +3,7 @@ import data_collector
 
 
 # Class to create signals for buying or selling a stock according to the trend
-class TrendOfInstrument:
+class Asset:
 
     def __init__(self,
                  symbol,
@@ -31,20 +31,5 @@ class TrendOfInstrument:
 
         return output
 
-    def get_current_trend(self):
-        data = data_collector.collecting_initial_datapoints(self.symbol)
+#    def get_current_trend(self):
 
-        if "Ask" in data.columns:
-            current_regression = stats.linregress(range(len(data["Ask"])), data["Ask"].astype(float))
-
-            if current_regression.slope > 0:
-                self.buy_signal = True
-                self.buy_signal = False
-            else:
-                self.sell_signal = True
-                self.buy_signal = False
-
-        output = {"buy_signal": self.buy_signal,
-                  "sell_signal": self.sell_signal}
-
-        return output

@@ -1,8 +1,5 @@
-import data_collector
+import data_collector as dc
+import datetime
 
-data_collector.real_time_data('ETH-USD')
+print(dc.intraday_data("AAPL", '2023-01-05T10:00:00', '2023-02-17T23:17:00'))
 
-#AAPL = alpha_model.TrendOfInstrument("AAPL")
-#print(AAPL.get_technical_trend())
-#AAPL.get_current_trend()
-#print("Sell Signal:", AAPL.sell_signal, "Buy Signal:", AAPL.buy_signal)

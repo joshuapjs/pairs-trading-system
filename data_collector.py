@@ -22,6 +22,8 @@ def collecting_initial_datapoints(symbol):
 
     def equities_data(stock_ticker):
 
+        print("Collecting initial data points")
+
         ask = []
         bid = []
         timestamp = []
@@ -81,7 +83,7 @@ def collecting_initial_datapoints(symbol):
         while True:
             # Number of data points collected - should be as high as tolerable
             # len(price) < 50 must be equal to len(df["Price"]) > 50 in the real_time_data.crypto_pair function
-            if len(price) < 10:
+            if len(price) < 50:
                 result = ws.recv()
                 result = json.loads(result)
                 if price[-1] != result['p']:
@@ -89,7 +91,6 @@ def collecting_initial_datapoints(symbol):
                     timestamp.append(datetime.datetime.fromtimestamp(result["t"] / 1000.0))
                     time.sleep(1)
             else:
-                print(len(price), len(timestamp))
                 crypto_frame = pd.DataFrame(
                     {"Price": price, "Time": timestamp})
                 price.clear()
@@ -98,7 +99,7 @@ def collecting_initial_datapoints(symbol):
                 del crypto_frame["Time"]
                 return crypto_frame
 
-    # Deciding between Cryptocurrency and equity prices
+    # Deciding between crypto and equity prices
     if '-' in symbol:
         return currencies_data(symbol)
     else:
@@ -122,6 +123,7 @@ def real_time_data(symbol):
                 while True:
                     result = ws.recv()
                     result = json.loads(result)
+                    # Check if received data entails new data
                     if df.tail(1).values[0][0] != result['p']:
                         price = result["p"]
                         timestamp = datetime.datetime.fromtimestamp(result["t"] / 1000.0)
@@ -163,7 +165,7 @@ def real_time_data(symbol):
                         print(reg_output.slope)  # modification needed - data should be stored in a database
                     time.sleep(1)
 
-    # Deciding between Cryptocurrency and equity prices
+    # Deciding between crypto and equity prices
     if '-' in symbol:
         print('Currency detected')
         crypto_pair(symbol)
@@ -175,14 +177,14 @@ def real_time_data(symbol):
 def intraday_data(symbol, start, end, interval="1m"):
     """
     :param symbol: ticker symbol of a US Stock
-    :param start: required datetime.datetime object e.g. datetime.datetime(2022, 1, 10, 15, 10, 0)
-    :param end: required Format datetime.datetime object e.g. datetime.datetime(2022, 1, 10, 16, 0, 0)
+    :param start: required format string in ISO 8601 e.g. '2023-01-05T10:00:00'
+    :param end: required format string in ISO 8601 e.g. '2023-02-17T23:17:00'
     :param interval: either 1m (standard) or 5m
     :return: DataFrame
     """
 
-    start_date = start.strftime('%s')
-    end_date = end.strftime('%s')
+    start_date = datetime.datetime.fromisoformat(start).strftime('%s')
+    end_date = datetime.datetime.fromisoformat(end).strftime('%s')
 
     # Basis for requests to EOD API for Intraday price data
     initial_resp = requests.get(f"https://eodhistoricaldata.com/api/intraday/{symbol}.US?api_token={api_key}"
@@ -193,9 +195,6 @@ def intraday_data(symbol, start, end, interval="1m"):
     raw_data = initial_resp.text
     df = pd.read_csv(StringIO(raw_data))
     df["Timestamp"] = df["Timestamp"].apply(lambda x: datetime.datetime.fromtimestamp(x))
-
-    # Test: intraday_data("AAPL", datetime.datetime(2023, 1, 10, 15, 10, 0),
-    # datetime.datetime(2023, 1, 10, 16, 0, 0)))
 
     return df
 
