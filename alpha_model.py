@@ -30,3 +30,5 @@ class Asset:
                   "sell_signal": self.sell_signal}
 
         return output
+
+

@@ -174,23 +174,29 @@ def real_time_data(symbol):
         equity_prices(symbol)
 
 
-def intraday_data(symbol, start, end, interval="1m"):
+def intraday_data(symbol, start, end, interval="1m", stock=False):
     """
-    :param symbol: ticker symbol of a US Stock
+    :param symbol: ticker symbol of a currency or US Stock (supported exchanges NYSE or NASDAQ)
     :param start: required format string in ISO 8601 e.g. '2023-01-05T10:00:00'
     :param end: required format string in ISO 8601 e.g. '2023-02-17T23:17:00'
     :param interval: either 1m (standard) or 5m
+    :param stock: Must be set as True if data for a stock is requested
     :return: DataFrame
     """
 
     start_date = datetime.datetime.fromisoformat(start).strftime('%s')
     end_date = datetime.datetime.fromisoformat(end).strftime('%s')
 
-    # Basis for requests to EOD API for Intraday price data
-    initial_resp = requests.get(f"https://eodhistoricaldata.com/api/intraday/{symbol}.US?api_token={api_key}"
-                                f"&from={start_date}"
-                                f"&to={end_date}"
-                                f"&interval={interval}")
+    url = f"https://eodhistoricaldata.com/api/intraday/{symbol}.FOREX?api_token={api_key}" \
+          f"&from={start_date}" \
+          f"&to={end_date}" \
+          f"&interval={interval}"
+
+    if stock:
+        url = url.replace('FOREX', 'US')
+
+    # Basis for requests to EOD API for Intraday forex data
+    initial_resp = requests.get(url)
 
     raw_data = initial_resp.text
     df = pd.read_csv(StringIO(raw_data))

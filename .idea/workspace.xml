@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="modification real_time_data">
+    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="dateformat intraday_data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/alpha_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/alpha_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_collector.py" afterDir="false" />
@@ -132,7 +132,10 @@
       <workItem from="1676242180444" duration="430000" />
       <workItem from="1676329395239" duration="1384000" />
       <workItem from="1676331051418" duration="517000" />
-      <workItem from="1676671567893" duration="935000" />
+      <workItem from="1676671567893" duration="1072000" />
+      <workItem from="1676745694387" duration="2817000" />
+      <workItem from="1677323231496" duration="215000" />
+      <workItem from="1677361633589" duration="1614000" />
     </task>
     <task id="LOCAL-00001" summary="First draft - unfinished">
       <created>1672608794603</created>
@@ -211,7 +214,21 @@
       <option name="project" value="LOCAL" />
       <updated>1676241511236</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="dateformat intraday_data">
+      <created>1676672570226</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1676672570226</updated>
+    </task>
+    <task id="LOCAL-00013" summary="dateformat intraday_data">
+      <created>1676672623101</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1676672623101</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -275,11 +292,12 @@
     <MESSAGE value="Avoiding redundant prices" />
     <MESSAGE value="Adding tws_connector.py" />
     <MESSAGE value="modification real_time_data" />
-    <option name="LAST_COMMIT_MESSAGE" value="modification real_time_data" />
+    <MESSAGE value="dateformat intraday_data" />
+    <option name="LAST_COMMIT_MESSAGE" value="dateformat intraday_data" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Trendfollow$data_grabber.coverage" NAME="data_grabber Coverage Results" MODIFIED="1673648905708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Trendfollow$alpha_model.coverage" NAME="alpha_model Coverage Results" MODIFIED="1672876212847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Trendfollow$main.coverage" NAME="main Coverage Results" MODIFIED="1676672391356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Trendfollow$main.coverage" NAME="main Coverage Results" MODIFIED="1677363849622" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
