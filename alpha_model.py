@@ -1,9 +1,8 @@
-from scipy import stats
 import data_collector
 
 
 # Class to create signals for buying or selling a stock according to the trend
-class Asset:
+class Pair:
 
     def __init__(self,
                  symbol,
@@ -16,7 +15,7 @@ class Asset:
 
 # Method to set a buy or sell signal depending on the kind of trend
     def get_technical_trend(self):
-        long_period = data_collector.close_data(self.symbol, data_collector.start_long_period)
+        long_period = data_collector.stock_close_data(self.symbol, data_collector.start_long_period)
         short_period = long_period[str(data_collector.start_short_period):]
         long_average = long_period["adjusted_close"].mean()
         short_average = short_period["adjusted_close"].mean()
@@ -30,5 +29,3 @@ class Asset:
                   "sell_signal": self.sell_signal}
 
         return output
-
-

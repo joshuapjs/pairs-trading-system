@@ -12,9 +12,9 @@ import os
 api_key = os.environ["API_EOD"]
 
 # Calculating three different dates for defining the relevant lengths of the time series
-last_day = datetime.date.today()
-start_short_period = last_day - datetime.timedelta(days=7)
-start_long_period = last_day - datetime.timedelta(days=200)
+today = datetime.date.today()
+start_short_period = today - datetime.timedelta(days=7)
+start_long_period = today - datetime.timedelta(days=200)
 
 
 # Infinite loop waiting for WebSocket data
@@ -174,7 +174,7 @@ def real_time_data(symbol):
         equity_prices(symbol)
 
 
-def intraday_data(symbol, start, end, interval="1m", stock=False):
+def stock_intraday(symbol, start, end, interval="1m", stock=False):
     """
     :param symbol: ticker symbol of a currency or US Stock (supported exchanges NYSE or NASDAQ)
     :param start: required format string in ISO 8601 e.g. '2023-01-05T10:00:00'
@@ -205,14 +205,29 @@ def intraday_data(symbol, start, end, interval="1m", stock=False):
     return df
 
 
+def currency_intraday(currency_symbol, start_date, pricing_interval: str):
+
+    def to_epoch(time_stamp):
+        epoch_stamp = (pd.Timestamp(time_stamp) - pd.Timestamp("1970-01-01")) // pd.Timedelta("1s")
+        return epoch_stamp
+
+    client = build_connection()
+    exchange_rates = pd.DataFrame(client.get_prices_intraday(currency_symbol + '.FOREX',
+                                                             interval=pricing_interval,
+                                                             _from=to_epoch(start_date),
+                                                             to=to_epoch(today)))
+
+    return exchange_rates
+
+
 # Method to request stock prices for a specific period
-def close_data(symbol, current_date):
+def stock_close_data(symbol, start_date):
 
     client = build_connection()
     prices = client.get_prices_eod(symbol,
                                    period="d",
                                    order="a",
-                                   from_=current_date,
-                                   to=last_day)
+                                   from_=start_date,
+                                   to=today)
 
     return pd.DataFrame(prices).set_index("date")
