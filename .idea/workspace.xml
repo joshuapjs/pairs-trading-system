@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="switch to forex or stock data">
+    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="refactoring + currency intraday">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/alpha_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/alpha_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_collector.py" afterDir="false" />
@@ -26,6 +26,19 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="e5fdeb11-54b9-4c4e-9e35-08946559fd3d" />
+        <option name="url" value="https://github.com/joshuapjs/Trendfollow.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -140,7 +153,11 @@
       <workItem from="1677969226054" duration="273000" />
       <workItem from="1678393930249" duration="4965000" />
       <workItem from="1678636938657" duration="1524000" />
-      <workItem from="1678639764249" duration="1668000" />
+      <workItem from="1678639764249" duration="2583000" />
+      <workItem from="1678646250660" duration="918000" />
+      <workItem from="1678777931860" duration="7000" />
+      <workItem from="1678777992135" duration="599000" />
+      <workItem from="1678801034255" duration="804000" />
     </task>
     <task id="LOCAL-00001" summary="First draft - unfinished">
       <created>1672608794603</created>
@@ -240,7 +257,21 @@
       <option name="project" value="LOCAL" />
       <updated>1677363967082</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="refactoring + currency intraday">
+      <created>1678641478852</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1678641478852</updated>
+    </task>
+    <task id="LOCAL-00016" summary="refactoring + currency intraday">
+      <created>1678641550567</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1678641550567</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -306,11 +337,12 @@
     <MESSAGE value="modification real_time_data" />
     <MESSAGE value="dateformat intraday_data" />
     <MESSAGE value="switch to forex or stock data" />
-    <option name="LAST_COMMIT_MESSAGE" value="switch to forex or stock data" />
+    <MESSAGE value="refactoring + currency intraday" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring + currency intraday" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Trendfollow$data_grabber.coverage" NAME="data_grabber Coverage Results" MODIFIED="1673648905708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Trendfollow$alpha_model.coverage" NAME="alpha_model Coverage Results" MODIFIED="1672876212847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Trendfollow$main.coverage" NAME="main Coverage Results" MODIFIED="1678640953466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Trendfollow$main.coverage" NAME="main Coverage Results" MODIFIED="1678801721542" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
