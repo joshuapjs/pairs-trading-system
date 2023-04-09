@@ -38,3 +38,15 @@ def close_data(symbol, start_date):
                                    to=today)
 
     return pd.DataFrame(prices).set_index("date")
+
+
+def current_cb_rates():
+
+    rates = "https://en.wikipedia.org/wiki/List_of_sovereign_states_by_central_bank_interest_rates"
+
+    table_rates_wiki = pd.read_html(rates, header=0)[0].drop(
+        columns=['Average inflation rate2017–2021 (%)by WB and IMF[1][2]as in the List',
+                 'Effective date of last change',
+                 'Central bank interest rate minus averageinflation rate (2017–2021)'])
+
+    return table_rates_wiki
