@@ -7,8 +7,9 @@ api_key = os.environ["API_EOD"]
 
 # Calculating three different dates for defining the relevant lengths of the time series
 today = datetime.date.today()
-start_short_period = today - datetime.timedelta(days=7)
-start_long_period = today - datetime.timedelta(days=200)
+seven_days = today - datetime.timedelta(days=7)
+two_hundred_days = today - datetime.timedelta(days=200)
+five_years_ago = today - datetime.timedelta(days=365 * 5)
 
 
 def currency_intraday(currency_pair, start_date, pricing_interval: str):
