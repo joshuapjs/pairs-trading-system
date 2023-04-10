@@ -1,3 +1,4 @@
+import pandas as pd
 import data_collector as data
 
 
@@ -53,9 +54,16 @@ class Pair:
 
         return rsi
 
+# Calculating the rate spreads between the central bank rates of the most liquid currencies
     def calculate_spread(self):
         rates = data.current_cb_rates()
+        spreads = {}
 
-        
+        for currency in rates.index:
+            spreads[self.symbol + currency] = rates['Central bank interest rate (%)'].loc[self.symbol]\
+                                              - rates['Central bank interest rate (%)'].loc[currency]
 
+        spreads_df = pd.DataFrame(data={'Spreads': spreads.values()}, index=spreads.keys())\
+            .drop(self.symbol * 2, axis=0)
 
+        return spreads_df

@@ -1,5 +1,6 @@
 import data_collector as data
+import alpha_model as alpha
 
-data.current_cb_rates()
+print(alpha.Pair('JPY').calculate_spread())
 
 
