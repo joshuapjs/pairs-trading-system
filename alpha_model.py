@@ -14,9 +14,13 @@ class Pair:
         self.buy_signal = buy_signal
         self.sell_signal = sell_signal
 
-# Method to set a buy or sell signal depending on the kind of trend
-    def get_technical_trend(self):
-        long_period = data.close_data(self.symbol, data.two_hundred_days)
+    def get_technical_trend(self, currency):
+        """
+        identifying the current technical trend and creating a buy or sell signal
+        :param currency: symbol of the foreign currency
+        :return: Dictionary including the signals for display
+        """
+        long_period = data.close_data(self.symbol + currency, data.two_hundred_days)
         short_period = long_period[str(data.seven_days):]
         long_average = long_period["adjusted_close"].mean()
         short_average = short_period["adjusted_close"].mean()
@@ -31,15 +35,14 @@ class Pair:
 
         return output
 
-# Calculating the current momentum of a given symbol expressed by the return in the past week
-    def calculate_rsi(self, period=14):
+    def calculate_rsi(self, currency, period=14):
         """
         Calculate the Relative Strength Index (RSI) for a given DataFrame of stock prices.
-
+        :param currency: symbol of the foreign currency
         :param period: the number of periods to use in the RSI calculation (default=14)
         :return: pandas Series with the RSI values
         """
-        close_price = data.close_data(self.symbol,
+        close_price = data.close_data(self.symbol + currency,
                                       data.five_years_ago)['adjusted_close']
         delta = close_price.diff()
 
@@ -54,8 +57,11 @@ class Pair:
 
         return rsi
 
-# Calculating the rate spreads between the central bank rates of the most liquid currencies
     def calculate_spread(self):
+        """
+        Calculating the rate spreads between the central bank rates of the most liquid currencies
+        :return: DataFrame containing the spreads depending on the currency of choice
+        """
         rates = data.current_cb_rates()
         spreads = {}
 

@@ -5,7 +5,7 @@ import os
 
 api_key = os.environ["API_EOD"]
 
-# Calculating three different dates for defining the relevant lengths of the time series
+# Calculating different dates for defining the relevant lengths of the time series
 today = datetime.date.today()
 seven_days = today - datetime.timedelta(days=7)
 two_hundred_days = today - datetime.timedelta(days=200)
@@ -13,7 +13,13 @@ five_years_ago = today - datetime.timedelta(days=365 * 5)
 
 
 def currency_intraday(currency_pair, start_date, pricing_interval: str):
-
+    """
+    Requesting intraday forex data
+    :param currency_pair: symbol of the currency pair of interest
+    :param start_date: start of the DataFrame
+    :param pricing_interval: the possible intervals: ‘5m’, ‘1h’ and ‘1m’
+    :return: DataFrame with the intraday forex data
+    """
     def to_epoch(time_stamp):
         epoch_stamp = (pd.Timestamp(time_stamp) - pd.Timestamp("1970-01-01")) // pd.Timedelta("1s")
         return epoch_stamp
@@ -27,11 +33,16 @@ def currency_intraday(currency_pair, start_date, pricing_interval: str):
     return exchange_rates
 
 
-# Method to request stock prices for a specific period
-def close_data(symbol, start_date):
+def close_data(currency_pair, start_date):
+    """
+    Method to request Forex rates for a specific pair and period
+    :param currency_pair: symbol of the currency pair of interest
+    :param start_date: start of the DataFrame
+    :return: DataFrame with the close forex data
+    """
 
     client = build_connection()
-    prices = client.get_prices_eod(symbol,
+    prices = client.get_prices_eod(currency_pair + '.FOREX',
                                    period="d",
                                    order="a",
                                    from_=start_date,
@@ -40,8 +51,11 @@ def close_data(symbol, start_date):
     return pd.DataFrame(prices).set_index("date")
 
 
-# Method to build DataFrame with current central bank rates given by wikipedia
 def current_cb_rates():
+    """
+    Method to build DataFrame with current central bank rates given by wikipedia
+    :return: DataFrame with the spreads
+    """
     url = "https://en.wikipedia.org/wiki/List_of_sovereign_states_by_central_bank_interest_rates"
     currency_symbols = {'United States': 'USD', 'Eurozone': 'EUR', 'Japan': 'JPY', 'United Kingdom': 'GBP',
                         'China': 'CNY', 'Australia': 'AUD', 'Canada': 'CAD', 'Switzerland': 'CHF'}
