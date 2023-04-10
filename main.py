@@ -1,5 +1,5 @@
-import data_collector
+import data_collector as data
 
-print(data_collector.close_data("EURUSD.FOREX", '2023-03-10').head())
+data.current_cb_rates()
 
 

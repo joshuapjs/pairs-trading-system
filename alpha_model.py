@@ -53,3 +53,9 @@ class Pair:
 
         return rsi
 
+    def calculate_spread(self):
+        rates = data.current_cb_rates()
+
+        
+
+

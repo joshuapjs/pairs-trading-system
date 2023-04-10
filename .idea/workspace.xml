@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="exclusion of redundant functions">
+    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="added current_cb_rates">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/alpha_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/alpha_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_collector.py" afterDir="false" />
@@ -170,7 +170,7 @@
       <workItem from="1680206462653" duration="27000" />
       <workItem from="1680806414292" duration="941000" />
       <workItem from="1681072486336" duration="24000" />
-      <workItem from="1681076838370" duration="979000" />
+      <workItem from="1681076838370" duration="5681000" />
     </task>
     <task id="LOCAL-00001" summary="First draft - unfinished">
       <created>1672608794603</created>
@@ -291,7 +291,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678801908049</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="adding calculate_rsi">
+      <created>1681077876642</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1681077876642</updated>
+    </task>
+    <task id="LOCAL-00019" summary="added current_cb_rates">
+      <created>1681080630368</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1681080630368</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -359,11 +373,13 @@
     <MESSAGE value="switch to forex or stock data" />
     <MESSAGE value="refactoring + currency intraday" />
     <MESSAGE value="exclusion of redundant functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="exclusion of redundant functions" />
+    <MESSAGE value="adding calculate_rsi" />
+    <MESSAGE value="added current_cb_rates" />
+    <option name="LAST_COMMIT_MESSAGE" value="added current_cb_rates" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Trendfollow$data_grabber.coverage" NAME="data_grabber Coverage Results" MODIFIED="1673648905708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Trendfollow$alpha_model.coverage" NAME="alpha_model Coverage Results" MODIFIED="1672876212847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Trendfollow$main.coverage" NAME="main Coverage Results" MODIFIED="1681077601950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Trendfollow$main.coverage" NAME="main Coverage Results" MODIFIED="1681087445458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

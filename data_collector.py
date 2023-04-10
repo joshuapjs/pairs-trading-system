@@ -40,13 +40,20 @@ def close_data(symbol, start_date):
     return pd.DataFrame(prices).set_index("date")
 
 
+# Method to build DataFrame with current central bank rates given by wikipedia
 def current_cb_rates():
-
     rates = "https://en.wikipedia.org/wiki/List_of_sovereign_states_by_central_bank_interest_rates"
+    currency_symbols = {'United States': 'USD', 'Eurozone': 'EUR', 'Japan': 'JPY', 'United Kingdom': 'GBP',
+                        'China': 'CNY', 'Australia': 'AUD', 'Canada': 'CAD', 'Switzerland': 'CHF'}
 
-    table_rates_wiki = pd.read_html(rates, header=0)[0].drop(
-        columns=['Average inflation rate2017–2021 (%)by WB and IMF[1][2]as in the List',
+    raw_table = pd.read_html(rates, header=0)[0].drop(
+        columns=['Average inflation rate 2017–2021 (%) by WB and IMF[1][2] as in the List',
                  'Effective date of last change',
-                 'Central bank interest rate minus averageinflation rate (2017–2021)'])
+                 'Central bank interest rate  minus average inflation rate (2017–2021)'])
 
-    return table_rates_wiki
+    for state in currency_symbols:
+        raw_table['Country or currency union'].replace(state, currency_symbols[state], inplace=True)
+
+    table = raw_table.set_index('Country or currency union').filter(items=currency_symbols.values(), axis=0)
+
+    return table
