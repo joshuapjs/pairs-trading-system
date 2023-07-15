@@ -1,5 +1,5 @@
 import pandas as pd
-import data_collector as data
+import eod_data_collector as data
 
 
 # Class to create signals for buying or selling a Currency depending on its trend
@@ -73,3 +73,9 @@ class Pair:
             .drop(self.symbol * 2, axis=0)
 
         return spreads_df
+
+
+# def model(currency_pair, param1, param2, param3):
+# If rsi is >30 and <70 no signal - otherwise, bet on trend reversal - news check??
+# If technical trend positive but rsi negative bet on reversal and vice versa
+# big positive spread --> forex rate might rise

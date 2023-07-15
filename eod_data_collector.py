@@ -1,9 +1,6 @@
 from build_connection import build_connection
 import pandas as pd
 import datetime
-import os
-
-api_key = os.environ["API_EOD"]
 
 # Calculating different dates for defining the relevant lengths of the time series
 today = datetime.date.today()
@@ -20,6 +17,7 @@ def currency_intraday(currency_pair, start_date, pricing_interval: str):
     :param pricing_interval: the possible intervals: ‘5m’, ‘1h’ and ‘1m’
     :return: DataFrame with the intraday forex data
     """
+
     def to_epoch(time_stamp):
         epoch_stamp = (pd.Timestamp(time_stamp) - pd.Timestamp("1970-01-01")) // pd.Timedelta("1s")
         return epoch_stamp

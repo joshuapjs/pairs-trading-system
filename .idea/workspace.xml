@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="added calculate_spread">
+    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="commenting + formatting">
+      <change afterPath="$PROJECT_DIR$/tws_data_collector.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/alpha_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/alpha_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_collector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/eod_data_collector.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,7 +170,24 @@
       <workItem from="1680206462653" duration="27000" />
       <workItem from="1680806414292" duration="941000" />
       <workItem from="1681072486336" duration="24000" />
-      <workItem from="1681076838370" duration="9315000" />
+      <workItem from="1681076838370" duration="9557000" />
+      <workItem from="1681091442300" duration="132000" />
+      <workItem from="1682021241350" duration="616000" />
+      <workItem from="1682114497821" duration="3021000" />
+      <workItem from="1682234328256" duration="40000" />
+      <workItem from="1682234438978" duration="739000" />
+      <workItem from="1683741859765" duration="117000" />
+      <workItem from="1684359619985" duration="346000" />
+      <workItem from="1684359983557" duration="42000" />
+      <workItem from="1685806827929" duration="879000" />
+      <workItem from="1686252220159" duration="98000" />
+      <workItem from="1686252325843" duration="958000" />
+      <workItem from="1686253605987" duration="144000" />
+      <workItem from="1686261742015" duration="681000" />
+      <workItem from="1686691171067" duration="620000" />
+      <workItem from="1686945681907" duration="1816000" />
+      <workItem from="1687357110837" duration="58000" />
+      <workItem from="1687651347790" duration="132000" />
     </task>
     <task id="LOCAL-00001" summary="First draft - unfinished">
       <created>1672608794603</created>
@@ -319,16 +336,43 @@
       <option name="project" value="LOCAL" />
       <updated>1681090247752</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="commenting + formatting">
+      <created>1681091391260</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1681091391260</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="2b87ae69-0e23-450f-b892-50508aed940e" value="TOOL_WINDOW" />
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/master" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
-        <entry key="MAIN">
+        <entry key="2b87ae69-0e23-450f-b892-50508aed940e">
           <value>
             <State>
               <option name="CUSTOM_BOOLEAN_PROPERTIES">
@@ -350,19 +394,26 @@
             </State>
           </value>
         </entry>
-      </map>
-    </option>
-    <option name="RECENT_FILTERS">
-      <map>
-        <entry key="Branch">
+        <entry key="MAIN">
           <value>
-            <list>
-              <RecentGroup>
-                <option name="FILTER_VALUES">
-                  <option value="origin/master" />
-                </option>
-              </RecentGroup>
-            </list>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -390,7 +441,8 @@
     <MESSAGE value="adding calculate_rsi" />
     <MESSAGE value="added current_cb_rates" />
     <MESSAGE value="added calculate_spread" />
-    <option name="LAST_COMMIT_MESSAGE" value="added calculate_spread" />
+    <MESSAGE value="commenting + formatting" />
+    <option name="LAST_COMMIT_MESSAGE" value="commenting + formatting" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Trendfollow$data_grabber.coverage" NAME="data_grabber Coverage Results" MODIFIED="1673648905708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
