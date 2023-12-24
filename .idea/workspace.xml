@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="commenting + formatting">
-      <change afterPath="$PROJECT_DIR$/tws_data_collector.py" afterDir="false" />
+    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="Improvement of the get_highlights function">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alpha_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/alpha_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/eod_data_collector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_connection.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/eod_data_collector.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tws_connector.py" beforeDir="false" afterPath="$PROJECT_DIR$/tws_connector.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,27 +45,35 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 7
+}]]></component>
   <component name="ProjectId" id="2Jbk8hd9CTp3T8cC3K6NkOxUOfM" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sping/Documents/Python/Projects/Trendfollow&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.main.executor": "Run",
+    "Python.tws_connector.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "TODO_SCOPE": "All Places",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/Users/sping/Documents/Python/Projects/Trendfollow",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -72,6 +82,7 @@
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Trendfollow" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -92,6 +103,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-7a29c1521ef0-c986f194a52a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.11799.298" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -188,6 +206,12 @@
       <workItem from="1686945681907" duration="1816000" />
       <workItem from="1687357110837" duration="58000" />
       <workItem from="1687651347790" duration="132000" />
+      <workItem from="1689420357766" duration="1968000" />
+      <workItem from="1689422365003" duration="1932000" />
+      <workItem from="1689424325398" duration="1743000" />
+      <workItem from="1689967465943" duration="60000" />
+      <workItem from="1690049346822" duration="32000" />
+      <workItem from="1703459787668" duration="310000" />
     </task>
     <task id="LOCAL-00001" summary="First draft - unfinished">
       <created>1672608794603</created>
@@ -343,7 +367,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681091391260</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Improvement of the get_highlights function">
+      <created>1689420479244</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1689420479244</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -442,7 +473,8 @@
     <MESSAGE value="added current_cb_rates" />
     <MESSAGE value="added calculate_spread" />
     <MESSAGE value="commenting + formatting" />
-    <option name="LAST_COMMIT_MESSAGE" value="commenting + formatting" />
+    <MESSAGE value="Improvement of the get_highlights function" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improvement of the get_highlights function" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Trendfollow$data_grabber.coverage" NAME="data_grabber Coverage Results" MODIFIED="1673648905708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
