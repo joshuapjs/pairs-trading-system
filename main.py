@@ -1,5 +1,4 @@
 import pandas as pd
-import eod_data_collector as data
 
 
 # Class to create signals for buying or selling a Currency depending on its trend
