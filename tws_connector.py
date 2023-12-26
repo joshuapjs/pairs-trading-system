@@ -1,4 +1,5 @@
-from ib_insync import IB, LimitOrder, MarketOrder
+import ib_insync.ticker
+from ib_insync import IB, LimitOrder, MarketOrder, Stock, Forex
 
 
 def place_order(asset, action: str, amount: int, limit_price: float = None):
@@ -23,3 +24,15 @@ def place_order(asset, action: str, amount: int, limit_price: float = None):
     # Giving the System time to process the order.
     ib.sleep(1)
     return trade.log, trade.orderStatus.status
+
+
+def get_current_quotes(symbol: str):
+    """
+    This function returns a list of the current quotes for a given stock
+    :param symbol: current stock symbol
+    :return: list of current quotes for the stock
+    """
+    # Instantiating the Stock class in order to define a Contract object
+    current_stock = Forex(symbol)
+    # Returning a list of the current quotes
+    return ib_insync.ticker.Ticker(current_stock).ticks

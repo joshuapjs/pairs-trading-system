@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="Changing the infrastructure to one place_order function" />
+    <list default="true" id="19295e50-e198-4f30-9b0b-4889f7bb4529" name="Changes" comment="renamed project">
+      <change beforePath="$PROJECT_DIR$/../pairs-trading/.idea/pairs-trading.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../pairs-trading/.idea/pairs-trading.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pairs-trading/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../pairs-trading/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pairs-trading/tws_connector.py" beforeDir="false" afterPath="$PROJECT_DIR$/../pairs-trading/tws_connector.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,7 +23,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../pairs-trading" />
     <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -365,6 +369,7 @@
       <workItem from="1703487949996" duration="1209000" />
       <workItem from="1703543288293" duration="1568000" />
       <workItem from="1703580268603" duration="2655000" />
+      <workItem from="1703610054421" duration="1354000" />
     </task>
     <task id="LOCAL-00001" summary="First draft - unfinished">
       <created>1672608794603</created>
@@ -567,7 +572,15 @@
       <option name="project" value="LOCAL" />
       <updated>1703582897241</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="renamed project">
+      <option name="closed" value="true" />
+      <created>1703610438201</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1703610438201</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -671,7 +684,8 @@
     <MESSAGE value="small adjustments" />
     <MESSAGE value="added stock_market_order" />
     <MESSAGE value="Changing the infrastructure to one place_order function" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changing the infrastructure to one place_order function" />
+    <MESSAGE value="renamed project" />
+    <option name="LAST_COMMIT_MESSAGE" value="renamed project" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Trendfollow$tws_connector.coverage" NAME="tws_connector Coverage Results" MODIFIED="1703582492905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
