@@ -1,4 +1,4 @@
-from ib_insync import IB, LimitOrder, MarketOrder, Stock, Forex
+from ib_insync import IB, LimitOrder, MarketOrder, Stock
 
 
 def place_order(asset, action: str, amount: int, limit_price: float = None):
@@ -25,20 +25,20 @@ def place_order(asset, action: str, amount: int, limit_price: float = None):
     return trade.log, trade.orderStatus.status
 
 
-def get_current_quotes(symbol: str):
+def get_current_quotes(symbol: str, exchange: str = "SMART", currency: str = "USD"):
     """
-    This function returns a list of the current quotes for a given stock
-    :param symbol: current stock symbol
-    :return: list of current quotes for the stock
+    This function returns a list of the current quotes for a given stock.
+    :param currency: The currency in which the security is traded.
+    :param exchange: The Exchange of the security for which the ask and bid is relevant.
+    :param symbol: current stock symbol.
+    :return: current bid and ask price of the security
     """
     ib = IB()
     ib.connect('127.0.0.1', 7497, clientId=1)
     # Instantiating the Stock class in order to define a Contract object
-    current_stock = Forex(symbol)
-    ticker = ib.reqMktData(current_stock)
+    current_stock = Stock(symbol, exchange, currency)
+    ticker = ib.reqMktData(current_stock, snapshot=True)
     ib.sleep(1)
     ib.cancelMktData(current_stock)
-    # Returning a list of the current quotes
-    return ticker.prevBid, ticker.prevAsk
-
-print(get_current_quotes("EURUSD"))
+    # Returning the current bid and ask price
+    return ticker.bid, ticker.ask
