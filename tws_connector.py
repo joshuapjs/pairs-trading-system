@@ -35,6 +35,8 @@ def get_current_quotes(symbol: str, exchange: str = "SMART", currency: str = "US
     """
     ib = IB()
     ib.connect('127.0.0.1', 7497, clientId=1)
+
+    ib.reqMarketDataType(3)
     # Instantiating the Stock class in order to define a Contract object
     current_stock = Stock(symbol, exchange, currency)
     ticker = ib.reqMktData(current_stock, snapshot=True)
