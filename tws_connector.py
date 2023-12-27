@@ -1,4 +1,3 @@
-import ib_insync.ticker
 from ib_insync import IB, LimitOrder, MarketOrder, Stock, Forex
 
 
@@ -32,7 +31,14 @@ def get_current_quotes(symbol: str):
     :param symbol: current stock symbol
     :return: list of current quotes for the stock
     """
+    ib = IB()
+    ib.connect('127.0.0.1', 7497, clientId=1)
     # Instantiating the Stock class in order to define a Contract object
     current_stock = Forex(symbol)
+    ticker = ib.reqMktData(current_stock)
+    ib.sleep(1)
+    ib.cancelMktData(current_stock)
     # Returning a list of the current quotes
-    return ib_insync.ticker.Ticker(current_stock).ticks
+    return ticker.prevBid, ticker.prevAsk
+
+print(get_current_quotes("EURUSD"))
