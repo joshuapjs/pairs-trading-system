@@ -5,6 +5,11 @@ import ib_insync
 
 
 class Asset:
+    """
+    This class should store the data of each stock that is currently traded.
+    """
+
+    # TODO Should this class store the data for a whole pair that is traded ?
 
     def __init__(self,
                  asset_symbol: str,
@@ -44,7 +49,12 @@ class Asset:
         return self.last_quote
 
 
-def connect_quote_stream(quote_symbol):
+def connect_to_ticker(quote_symbol: str):
+    """
+    This function connects to TWS and builds a connection to a stock ticker symbol.
+
+    quote_symbol: Ticker symbol of the given stock.
+    """
     # Setup of the client to request data from TWS
     ib_insync.util.startLoop()
     ib = ib_insync.IB()
@@ -57,8 +67,22 @@ def connect_quote_stream(quote_symbol):
     # Request Bid/Ask quotes from TWS
     ticker = ib.reqTickByTickData(current_stock, 'BidAsk')
     
+    # wait for response
     ib.sleep(2)
 
-    return ticker.marketPrice()
+    # Feedback if connection was built successful. 
+    if ticker:
+        print(f"Connection to {current_ticker.localSymbol} disconnected")
+    
+    return ib, ticker
+
+
+def disconnect_from_ticker(ticker_subscription: tuple):
+
+   ib, current_ticker = ticker_subscription
+   ib.cancelTickByTickData(current_ticker.contract, 'BidAsk')
+
+   print(f"Connection to {current_ticker.localSymbol} disconnected")
+
 
 
