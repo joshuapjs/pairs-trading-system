@@ -5,6 +5,7 @@ according to the alpha_model properly.
 import polygon
 import os
 import pandas as pd
+from data_connector import Pair
 
 
 def determine_position_size(symbols: list):
