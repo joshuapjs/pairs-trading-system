@@ -16,7 +16,7 @@ def build_connection():
     ib.connect('127.0.0.1', 7497, clientId=1)
 
 
-def place_order(ticker_symbol: str, exchange_mic: str, currency: str, action: str, quantity: str:w):
+def place_order(ticker_symbol: str, exchange_mic: str, currency: str, action: str, quantity: str):
     """
     This Function places an order for a stock and manages its execution.
     """

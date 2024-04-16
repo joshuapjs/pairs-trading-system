@@ -7,87 +7,72 @@ import ib_insync
 class Pair:
     """
     This class should store the data of each stock that is currently traded.
+    To reduce overhead, no getter and setter methods were used.
     """
 
     def __init__(self,
-                 pair_traded: tuple,
-                 currency: str)
+                 tickers: tuple,
+                 currency: str):
 
         # TODO Prüfen ob es sich lohnen würde zwei unterschiedliche currencies zulassen.
 
-        first_symbol, second_symbol = pair_traded
+        long_ticker, short_ticker = tickers
 
-        self.symbols = (ticker_a.localSymbol, ticker_b.localSymbol)
-        self.first_symbol = first_symbol
-        self.second_symbol = second_symbol
-        self.first_quote = None
-        self.second_quote = None
+        self.tickers = tickers
+        self.long_ticker = long_ticker
+        self.short_ticker = short_ticker
+        self.long_quote = None
+        self.short_quote = None
         self.currency = currency
-        self.first_client = None
-        self.second_client = None
     
-    def get_symbols(self):
-        return self.symbols
 
-    def get_currency(self):
-        return self.last_quote
+class Connection:
+    """
+    Build a connection to TWS and request data.
+    """
+    # NOTE: The current_pairs MUST be a dictionary mapping a frozenset containing both tickers on the contract.
+    # NOTE: Around the (Price)-Events produced by this class should the whole application be built.
+    # Setup of the client to request data from TWS.
+    def __init__(self, current_pairs: dict):
+        # A list containing the current Pairs that are traded.
+        self.current_pairs = current_pairs
+        self.current_tickers = set()  # Set that contains all current tickers, data is requested for.
+        self.current_stocks = list() # List containing the Stock class instances.
 
-    def get_first_ticker(self):
-        return self.first_symbol
-
-    def get_second_ticker(self):
-        return self.second_symbol
-
-    def _connect_to_ticker(quote_symbol: str):
-        """
-        This function connects to TWS and builds a connection to a stock ticker symbol.
-
-        quote_symbol: Ticker symbol of the given stock.
-        """
-        # Setup of the client to request data from TWS
-
+    def connect(self):
         ib_insync.util.startLoop()
         ib = ib_insync.IB()
 
-        # Connect to local host
-        ib.connect("127.0.0.1", 7496, clientId=15)
+        # Connect to TWS.
+        ib.connect("127.0.0.1", 7497, clientId=15)
 
-        # Prepare connection to websocket for quote_symbol
-        current_stock = ib_insync.Stock(quote_symbol)
-        # Request Bid/Ask quotes from TWS
-        ticker = ib.reqTickByTickData(current_stock, 'BidAsk')
+        # NOTE Comment this out for real time data. 
+        ib.reqMarketDataType(3) 
         
-        # wait for response
-        ib.sleep(2)
+        ib.sleep(3)
+        # Unpacking instances of the Pair class.
+        for pair in list(self.current_pairs.values()):
+                self.current_tickers.add(pair.long_ticker)
+                self.current_tickers.add(pair.short_ticker)
 
-        # Feedback if connection was built successful. 
-        if ticker:
-            print(f"Connection to {quote_symbol} established.")
+        # Transform the tickers into instances of the ib_insync Stock-class (Stock "Contracts").
+        contracts = [ib_insync.contract.Stock(current_ticker, "SMART", "USD") for current_ticker in list(self.current_tickers)]
         
-        return ib, ticker
+        # We safe the contracts just created in a list that can be adjusted.
+        self.current_stocks = contracts
+        # Defining the stock contracts alone is not sufficient. The Stock instances need to be qualified.
+        # in order to enable that data can be requested with them.
+        for current_contract in self.current_stocks:
+            ib.qualifyContracts(current_contract)
+            data = ib.reqMktData(current_contract)
+            ib.sleep(1)
+            print(data)
 
-    def connect():
-        if not self.first_client:
-            print(f"Connecting to ticker {self.first_ticker}")
-            self.first_client = self._connect_to_ticker(self.first_client)
-        elif not self.second_client:
-            print(f"Connecting to ticker {self.second_ticker}")
-            self.second_client = self._connect_to_ticker(self.second_client)
+        # TODO: The Marketdata requested, has to update each relevant Pair instance. So that there are initial values in it.
+        # TODO: Maybe then there should be an almost endless function running (in a separated Procces or as main Process?)
+        #       that updates all the Pairs, resulting in a new price event. whenever a suffucient threshhold of such price events
+        #       is reached (every price event might be too much?) the calculation should run and trades placed etc.
 
-    def set_first_quote(self, latest_quote):
-        self.first_quote = latest_quote 
-        print(f"last_quote of {self.first_symbol} was updated.") 
-        return 1
-
-    def set_second_quote(self, latest_quote):
-        self.second_quote = latest_quote
-        print(f"last_quote of {self.second_symbol} was updated.") 
-        return 1
-
-    def disconnect_from_ticker(ticker_subscription: tuple):
-       # TODO Add this to the destructor of the class.
-       ib, current_ticker = ticker_subscription
-       ib.cancelTickByTickData(current_ticker.contract, 'BidAsk')
-
-       print(f"Connection to {current_ticker.localSymbol} disconnected")
-
+if __name__ == "__main__":
+    ticker_pair = Connection({frozenset(("AAPL", "TSLA")) : Pair(("AAPL", "TSLA"), "EUR")})
+    ticker_pair.connect()
