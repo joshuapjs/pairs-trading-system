@@ -27,3 +27,4 @@ def place_order(ticker_symbol: str, exchange_mic: str, currency: str, action: st
                                     currency=currency)
  
     order = ib_insync.LimitOrder(action, quantity)
+    limitTrade = ib.placeOrder(contract, limitOrder)

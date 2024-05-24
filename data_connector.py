@@ -66,13 +66,15 @@ class Connection:
             ib.qualifyContracts(current_contract)
             data = ib.reqMktData(current_contract)
             ib.sleep(1)
-            print(data)
+            print(data.markprice)
 
         # TODO: The Marketdata requested, has to update each relevant Pair instance. So that there are initial values in it.
         # TODO: Maybe then there should be an almost endless function running (in a separated Procces or as main Process?)
         #       that updates all the Pairs, resulting in a new price event. whenever a suffucient threshhold of such price events
         #       is reached (every price event might be too much?) the calculation should run and trades placed etc.
 
+
 if __name__ == "__main__":
     ticker_pair = Connection({frozenset(("AAPL", "TSLA")) : Pair(("AAPL", "TSLA"), "EUR")})
-    ticker_pair.connect()
+    ib = ticker_pair.connect()
+
