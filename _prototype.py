@@ -9,25 +9,29 @@ ib = ib_insync.IB()
 connection = ib.connect("127.0.0.1", 7497, clientId=15)
 
 
-def get_stock_data(current_pairs: list):
-    recent_asks = dict()
+def get_stock_data(pairs_trading_logic: dict):
+    recent_prices = dict()
 
     # NOTE Comment this out for real time data. 
     ib.reqMarketDataType(3) 
     ib.sleep(1)
 
     # Transform the tickers into instances of the ib_insync Stock-class (Stock "Contracts").
-    contracts = [ib_insync.contract.Stock(current_ticker, "SMART", "USD") for current_ticker in list(current_pairs)]
+    contracts = [ib_insync.contract.Stock(ticker_a, "SMART", "USD"), ib_insync.contract.Stock(ticker_b, "SMART", "USD")
+                 for ticker_a, ticker_b in pairs_trading_logic.keys()]
 
     # Defining the stock contracts alone is not sufficient. The Stock instances need to be qualified.
     # in order to enable that data can be requested with them.
-    for current_contract in contracts:
-        ib.qualifyContracts(current_contract)
-        data = ib.reqMktData(current_contract)
+    for ticker_a, ticker_b in contracts:
+        ib.qualifyContracts(ticker_a)
+        data_a = ib.reqMktData(ticker_a)
+        ib.qualifyContracts(ticker_b)
+        data_b = ib.reqMktData(ticker_b)
         ib.sleep(1)
-        recent_ask[current_contract.symbol] = data.dict()["ask"] 
+        recent_prices[ticker_a.symbol] = (data_a.dict()["ask"], data_a.dict()["bid"])
+        recent_prices[ticker_b.symbol] = (data_b.dict()["ask"], data_b.dict()["bid"])
 
-    return recent_asks
+    return recent_prices 
 
 
 def limit_order(limit_price: int, stock: str, exchange: str = "SMART", currency="USD", action="BUY", quantity=1000) :
@@ -51,31 +55,21 @@ def market_order(stock: str, exchange: str = "SMART", currency="USD", action="BU
     ib.sleep(1)
 
 
-def compare_pairs(current_stock_data):
-    ticker_symbols = []
-    for current_stock in current_stock_data:
-        ticker_symbols.append(current_stock.symbol)
+def compare_pairs(current_prices, pairs_trading_logic):  # Pairs trading logic ist the Research based insight about selected pairs
 
     current_signals = dict()
-
-    def powerset(iterable):
-        s = list(iterable)
-        return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
-
-    pairs_to_check = list(set([pair for pair in powerset(ticker_symbols) if len(pair) == 2]))
-
-    for stocka, stockb in pairs_to_check:
-        if stocka > stockb:
-            current_signals[stocka] = 0
-            current_singals[stockb] = 1
+    # Hier muss ein Threshold berechnet werden. Wo befinden wir uns,
+    # bei Betrachtung der stationären Zeitreihe die die Divergenz der Returns darstellt ? 
 
 
 if __name__ == "__main__":
-    ticker_pair = ["AAPL", "TSLA"]
-    prices = get_stock_data(ticker_pair)
+    # Just a quick functionality test
+
+    winning_pairs = {("AAPL","TSLA"):(None,None), ("MSFT","NVDA"): (None,None)} 
+    prices = get_stock_data(winning_pairs)
     
-    for ticker in ticker_pair:
-        limit_order(limit_price[ticker], stock=ticker)
+    for ticker in prices:
+        limit_order(limit_price[ticker.symbol], stock=ticker)
 else:
     raise ImportError("This module is not for external use. This is just a prototype.")
 
