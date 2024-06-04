@@ -1,30 +1,29 @@
 """
-Execution Model
----------------
-
 This Module contains the functions necessary to size and place orders on behalf of the Alpha Model. 
 """
 
 import ib_insync
-# util.startLoop()  # uncomment this line when in a notebook
-
-def build_connection():
-    """
-    A library to build a connection to localhost.
-    """
-    ib = ib_insync.IB()
-    ib.connect('127.0.0.1', 7497, clientId=1)
+from tws_connection import ib, build_connection 
 
 
-def place_order(ticker_symbol: str, exchange_mic: str, currency: str, action: str, quantity: str):
-    """
-    This Function places an order for a stock and manages its execution.
-    """
-    
-    # Instantiating the Stock contract.
-    current_stock = ib_insync.Stock(symbol=ticker_symbol, 
-                                    exchange=exchange_mic, 
-                                    currency=currency)
- 
-    order = ib_insync.LimitOrder(action, quantity)
-    limitTrade = ib.placeOrder(contract, limitOrder)
+# Check if a connection exists already
+if not ib.isConnected():
+    build_connection()
+
+
+def cancel_order(order_to_cancel):
+    ib.cancelOrder(order_to_cancel)
+    ib.sleep(1)
+
+
+def stock_limit_order(contract: ib_insync.contract.Stock, limit_price: int, action="BUY", quantity=10):
+    order = ib_insync.LimitOrder(action, quantity, limit_price)
+    ib.placeOrder(contract, order)
+    ib.sleep(1)
+
+
+def stock_market_order(contract: ib_insync.contract.Stock, action="BUY", quantity=10) :
+    order = ib_insync.MarketOrder(action, quantity)
+    ib.placeOrder(contract, order)
+    ib.sleep(1)
+

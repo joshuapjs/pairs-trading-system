@@ -1,15 +1,15 @@
 from data_connector import Pair
 from itertools import chain, combinations
+from tws_connection import ib, build_connection
+import execution_model as em
 import ib_insync
 import math
 import copy
 
-ib_insync.util.startLoop()
-# TODO: Bei Modularisierung muss ib bei den Funktionen als werden.
-ib = ib_insync.IB()
 
-# Connect to TWS.
-connection = ib.connect("127.0.0.1", 7497, clientId=15)
+# Check if a connection exists already
+if not ib.isConnected():
+    build_connection()
 
 
 def get_stock_data(pairs_traded: list):
@@ -35,18 +35,6 @@ def get_stock_data(pairs_traded: list):
         pair.quotes_b = data_b
 
     return pairs_traded
-
-
-def stock_limit_order(contract: ib_insync.contract.Stock, limit_price: int, action="BUY", quantity=10) :
-    order = ib_insync.LimitOrder(action, quantity, limit_price)
-    ib.placeOrder(contract, order)
-    ib.sleep(1)
-
-
-def stock_market_order(contract: ib_insync.contract.Stock, action="BUY", quantity=10) :
-    order = ib_insync.MarketOrder(action, quantity)
-    ib.placeOrder(contract, order)
-    ib.sleep(1)
 
 
 def compare_pairs(current_pairs):  # Pairs trading logic ist the Research based insight about selected pairs
@@ -75,6 +63,13 @@ if __name__ == "__main__":
             ]
     pairs = get_stock_data(winning_pairs)
     print(pairs)
+
+    contract = ib_insync.contract.Stock("TSLA", "SMART", "USD")
+    ib.qualifyContracts(contract)
+    em.stock_market_order(contract, quantity=1000)
+    open_orders = ib.openOrders()
+    print(open_orders[0].orderId)
+    em.cancel_order(open_orders[0])
 
 else:
     raise ImportError("This module is not for external use. This is just a prototype.")
