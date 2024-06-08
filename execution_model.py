@@ -1,7 +1,6 @@
 """
 This Module contains the functions necessary to size and place orders on behalf of the Alpha Model. 
 """
-
 import ib_insync
 from tws_connection import ib, build_connection 
 

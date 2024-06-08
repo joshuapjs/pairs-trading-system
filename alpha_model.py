@@ -1,18 +1,29 @@
+"""
+This Module contains the functions that are need to determine if a 
+trading opportunity based on the strategy is present.
+"""
 import ib_insync
 import data_connector as dc
 
-def generate_signal(traded_pair: dc.Pair, threshold: float) -> list(tuple):
-    """
-    This function generates a signal for each given pair under a specific threshold. The output is a list of tuples, containing the data.
 
-    traded_pair: A dc.Pair obeject of the pair that is evaluated
-    threshold: The threshold given under which the Pair is evaluated.
-    """
-    delta = traded_pair.first_quote - alpha - beta * traded_pair.second_quote  # TODO Model parameter ergänzen
+# Check if a connection exists already
+if not ib.isConnected():
+    build_connection()
 
-    if threshold <= delta:
-        # 11 = BUY; 10 = Hold; 00 = SELL 
-        signal = [(traded_pair.second_symbol, 11), 
-                  (traded_pair.first_symbol, 00)]
 
-    return signal
+def check_for_entry(pair):  # Pairs trading logic ist the Research based insight about selected pairs
+    # Hier muss ein Threshold berechnet werden. Wo befinden wir uns,
+    # bei Betrachtung der stationären Zeitreihe die die Divergenz der Returns darstellt ?
+     
+    const, slope, threshold = pair.equation
+    estimate = const + slope * pair.quotes_b.dict()["ask"]  # TODO Datenzugriff ist ungetestet
+    delta = pair.quotes_a.dict()["ask"] - estimate
+    if abs(delta) > threshold:
+        # assign priority based on strength of deviation TODO find a better way, maybe in terms of the distribution of the variable
+        deviation = (delta - threshold) / threshold
+        sign = math.copysign(1, delta)
+        new_signals[current_pairs.tickers] = (deviation, sign, pair, (copy.copy(pair.quote_a), copy.copy(pair.quote_b)))
+        # Das Portfolio Model muss dann basieredn auf der stärke der Abweichung und der Richtung, Entscheidungen treffen was gekauft werden soll.
+        
+    return new_signals
+

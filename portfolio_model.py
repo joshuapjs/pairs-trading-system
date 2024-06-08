@@ -6,6 +6,35 @@ import polygon
 import os
 import pandas as pd
 from data_connector import Pair
+from tws_connection import ib, build_connection 
+
+
+# Check if a connection exists already
+if not ib.isConnected():
+    build_connection()
+
+
+class Portfolio:
+    """
+    This class is used to manage the current Portfolio.
+    """
+
+    def __init__(self):
+        print("Start Portfolio initialization...")
+        self.current_signals = dict()
+        profile = input("Please specify the Account you are trading on:\n>> ")  # TODO This should be asked during Programm init
+        self.profile = profile
+        print("----Portfolio initialized----".)
+
+    def analyze_signal(new_signals):
+        self.current_signals.update(new_signals)
+        print("Start analyzin Signals...")
+        signals = list(self.curren_signals.values[0])
+        signals.sort(key= lambda a: a[0])
+        current_positions = ib.positions(self.profile)
+
+
+
 
 
 def determine_position_size(symbols: list):
