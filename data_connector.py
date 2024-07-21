@@ -36,19 +36,18 @@ class Pair:
         self.quotes_b = None
         self.equation: tuple = None  # (const, slope, threshold)
         self.currency: str = currency
-    
-    def connect_data(self)
-        # Define the contract - TODO make it dependend on the incoming stock - request the data of the stock remotely if possible and
-        # fill in the request correctly
-        self.contract_a = ib_insync.contract.Stock(pair.ticker_a, "SMART", "USD")
-        self.contract_b = ib_insync.contract.Stock(pair.ticker_b, "SMART", "USD")
+
+    def connect_data(self):
+        # Define the contract - TODO make it dependend on the incoming stock - request the data of the stock remotely
+        #  if possible and fill in the request correctly
+        self.contract_a = ib_insync.contract.Stock(self.ticker_a, "SMART", "USD")
+        self.contract_b = ib_insync.contract.Stock(self.ticker_b, "SMART", "USD")
         # Defining the stock contracts alone is not sufficient. The Stock instances need to be qualified.
         # in order to enable that data can be requested with them.
-        ib.qualifyContracts(pair.contract_a)
-        data_a = ib.reqMktData(pair.contract_a)
-        ib.qualifyContracts(pair.contract_b)
-        data_b = ib.reqMktData(pair.contract_b)
-        pair.quotes_a = data_a  # TODO Does this make sense or can I insert the request directly?
-        pair.quotes_b = data_b
-        print("----Connected ticker {pair.ticker_a} and {pair.ticker_b} to data source----")
+        ib.qualifyContracts(self.contract_a)
+        data_a = ib.reqMktData(self.contract_a)
+        ib.qualifyContracts(self.contract_b)
+        data_b = ib.reqMktData(self.contract_b)
+        self.quotes_a = data_a  # TODO Does this make sense or can I insert the request directly?
+        self.quotes_b = data_b
 

@@ -13,11 +13,9 @@ if not ib.isConnected():
 
 
 def connect_pairs(pairs_traded: list):
-
-    # NOTE Comment this out for real time data. 
+    # NOTE Comment this out for real time data.
     ib.reqMarketDataType(3) 
     ib.sleep(1)
-
     # Transform the tickers into instances of the ib_insync Stock-class (Stock "Contracts").
     for pair in pairs_traded:
         pair.connect_data()
@@ -25,20 +23,13 @@ def connect_pairs(pairs_traded: list):
 
 
 if __name__ == "__main__":
-    # Just a quick functionality test
-    winning_pairs = [
-            Pair(("META", "MSFT"), "USD"),
-            Pair(("NVDA", "TSLA"), "USD")
-            ]
-    pairs = get_stock_data(winning_pairs)
+    # Test data
+    test_pairs = [Pair(("AAPL", "MSFT"), "USD"),
+                  Pair(("GM", "TSLA"), "USD"),
+                  Pair(("AMZN", "CPNG"), "USD")]
 
-    contract = ib_insync.contract.Stock("TSLA", "SMART", "USD")
-    ib.qualifyContracts(contract)
-    em.stock_market_order(contract, quantity=1000)
-    open_orders = ib.openOrders()
-    print(open_orders[0].orderId)
-    em.cancel_order(open_orders[0])
+    # Connect to the data for each ticker.
+    connect_pairs(test_pairs)
 
 else:
     raise ImportError("This module is not for external use. This is just a prototype.")
-
