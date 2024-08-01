@@ -16,12 +16,13 @@ all_data = dict()
 class Pair:
     """
     This class should store the data of each stock that is currently traded.
-    To reduce overhead, no getter and setter methods were used.
     """
 
     def __init__(self,
                  tickers: tuple,
-                 currency: str):
+                 currency: str
+                 equation: tuple):
+
         # TODO Prüfen ob es sich lohnen würde zwei unterschiedliche currencies zulassen.
 
         a, b = tickers
@@ -33,8 +34,8 @@ class Pair:
         self.contract_b: ib_insync.contract.Stock = None
         self.quotes_a = None
         self.quotes_b = None
-        self.equation: tuple = None  # (const, slope, threshold)
-        self.currency: str = currency
+        self.equation: tuple = equation # (const, slope, threshold)
+        self.currency: str = currency#
 
     @staticmethod
     def _collect_data(ticker, currency):
@@ -54,3 +55,6 @@ class Pair:
         self.quotes_b = data_b
         self.contract_a = contract_a
         self.contract_b = contract_b
+
+    def export(self):
+        return self.tickers, self.currency
