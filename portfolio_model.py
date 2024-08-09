@@ -69,8 +69,8 @@ class Portfolio:
                 # TODO The Ignored signals should be compared too, while discriminating after timeliness.
                 ticker_a, ticker_b = pair.tickers
                 # Formel zur Berechnung des Anteils von b.
-                shares_b = ((PORTFOLIO_VALUE / ASSETS_TRADED - const * quotes[ticker_a]) *
-                            (1 / (slope * quotes[ticker_a] + quotes[ticker_b])))
+                shares_b = ((PORTFOLIO_VALUE / ASSETS_TRADED - const * quotes[ticker_a].ask) *
+                            (1 / (slope * quotes[ticker_a].ask + quotes[ticker_b].ask)))
                 shares_a = const + slope * shares_b
                 # Preparation of the output.
                 portfolio_adjustment[ticker_a] = int(shares_a)
@@ -92,7 +92,7 @@ class Portfolio:
         # Get the current positions from IBKR.
         current_positions = ib.positions(self.profile)
         # Get the current signals that where discovered but not followed yet.
-        current_ignored_signals = list(copy.copy(self.ignored_signals.values()))
+        current_ignored_signals = list(copy.copy(list(self.ignored_signals.values())))
         current_ignored_signals.sort(key=lambda a: a[0], reverse=True)
 
         # Instantiate a new list to gather the signals that 
@@ -107,7 +107,7 @@ class Portfolio:
             # Get the average price that was realized while creating the position.
             buy_in = position.avgCost
             # Get the current price of the Asset.
-            current_price = self.followed_signals[ticker][4][ticker]
+            current_price = self.followed_signals[ticker][3][ticker].ask
             # TODO As the pairs are available the realtime price could be used.
             # Calculate the current pnl of the position and safe it.
             current_pnl = (current_price - buy_in) / buy_in
@@ -116,9 +116,10 @@ class Portfolio:
         
         # Now the pnls have to be aggregated for each signal that was followed
         # and has to be compared to the projected pnl.
-        for signal in stocks_to_check:
+        for signal in list(stocks_to_check.values()):
             # Get the tickers for both positions.
-            ticker_a, ticker_b = signal[2]
+            tickers, currency = signal[2]
+            ticker_a, ticker_b = tickers
             # Get the projected retorn of the signal.
             expected_return = signal[0]
             current_pnl = self.position_pnl[ticker_a] + self.position_pnl[ticker_b]
@@ -152,21 +153,4 @@ class Portfolio:
         portfolio_adjustment.update(new_positions)  # This is not the only occasion portfolio_adjustment receives data.
 
         return portfolio_adjustment
-
-
-if __name__ == "__main__":
-    signal_1 = (.005, 1., Pair(("AAPL","MSFT"), "USD"), 200., 190., 1., .5)
-    signal_2 = (.01, -1., Pair(("TSLA", "BYD"), "USD"), 270., 300., 1., .5)
-    signal_3 = (.01, 1., Pair(("NVDA", "TSMC"), "USD"), 110., 100., 1., .5)
-    signal_4 = (.02, 1., Pair(("AMZN", "CPNG"), "USD"), 300., 270., 1., .5)
-
-    test_data = {
-        ("AAPL", "MSFT"): signal_1,
-        ("CPNG", "AMZN"): signal_2,
-        ("TSLA", "VW"): signal_3,
-        ("GM", "NVDA"): signal_4
-    }
-
-    portfolio = Portfolio()
-    portfolio.optimize()
 

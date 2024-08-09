@@ -2,11 +2,11 @@
 This Module contains the functions that are need to determine if a 
 trading opportunity based on the strategy is present.
 """
-import ib_insync as ib
+import ib_insync
 import copy
 import math
 import data_connector as dc
-from tws_connection import build_connection
+from tws_connection import ib, build_connection
 
 # Check if a connection exists already
 if not ib.isConnected():
@@ -33,11 +33,12 @@ def generate_signals(pairs):  # Pairs trading logic ist the Research based insig
             pairs_traded[ticker_b] = pair  # This is memory-wise very inefficient but memory should not be a problem.
             new_signals[pair.tickers] = (deviation,
                                          sign,
-                                         pair.export(),
+                                         pair,
                                          {
-                                             ticker_a: copy.copy(pair.quote_a),
-                                             ticker_b: copy.copy(pair.quote_b)
+                                             ticker_a: copy.copy(pair.quotes_a),
+                                             ticker_b: copy.copy(pair.quotes_b)
                                          },
                                          const,
                                          slope)
     return new_signals, pairs_traded
+

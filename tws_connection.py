@@ -4,6 +4,7 @@ This module enables the program to share the connection to tws.
 
 from ib_insync import IB
 
+
 ib = IB()
 
 def build_connection():

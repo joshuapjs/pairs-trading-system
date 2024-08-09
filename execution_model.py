@@ -29,7 +29,9 @@ def stock_market_order(contract: ib_insync.contract.Stock, action="BUY", quantit
 
 
 def execute_portfolio_adjustments(portfolio_class, portfolio_adjustments):
-    # TODO This function should try to minimize trading cost!
+    # TODO This function should try to minimize trading cost
+    # TODO This Calculation should run during the initialization.
+    # TODO there must be an initialize function.
     for ticker, position_size in portfolio_adjustments.items():
         pair = portfolio_class.pairs_traded[ticker]
         if pair.ticker_a == ticker:

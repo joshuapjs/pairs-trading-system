@@ -20,7 +20,7 @@ class Pair:
 
     def __init__(self,
                  tickers: tuple,
-                 currency: str
+                 currency: str,
                  equation: tuple):
 
         # TODO Prüfen ob es sich lohnen würde zwei unterschiedliche currencies zulassen.
@@ -45,6 +45,7 @@ class Pair:
         # Defining the stock contracts alone is not sufficient. The Stock instances need to be qualified.
         # in order to enable that data can be requested with them.
         ib.qualifyContracts(contract)
+        ib.reqMarketDataType(3)  # TODO Comment if Live Data subscription
         data = ib.reqMktData(contract)
         return data, contract
 
