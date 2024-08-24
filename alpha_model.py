@@ -39,6 +39,7 @@ def generate_signals(pairs):  # Pairs trading logic ist the Research based insig
                                              ticker_b: copy.copy(pair.quotes_b)
                                          },
                                          const,
-                                         slope)
+                                         slope,
+                                         threshold)
     return new_signals, pairs_traded
 

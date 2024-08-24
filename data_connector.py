@@ -57,5 +57,6 @@ class Pair:
         self.contract_a = contract_a
         self.contract_b = contract_b
 
-    def export(self):
+    def export_essentials(self):
         return self.tickers, self.currency
+    
