@@ -76,3 +76,19 @@ def execute_portfolio_adjustments(portfolio_class: portfolio_model.Portfolio, po
             print(f"EXECUTION MODEL : Zero positional change - no execution necessary for {ticker}.")
             continue
 
+
+def determine_costs(portfolio_class: portfolio_model.Portfolio, ticker: str, volume_direction: int):
+    """
+    This function should calculate the costs of a possible trade in order to determine if its still 
+    profitable during the exectution.
+    :param portfolio_class: The class of the current Portfolio from the Module portfolio_model.py.
+    :param ticker: The ticker that should be traded.
+    :param volume_direction: Amount of shares, to be sold (-) or to be bought (+).
+    :return: 
+    """
+    if volume_direction > 0:
+        current_price = portfolio_class.followed_signals[ticker][3][ticker].bid
+    else:
+        current_price = portfolio_class.followed_signals[ticker][3][ticker].ask
+
+

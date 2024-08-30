@@ -6,7 +6,16 @@ from constants import ACCOUNT_NUMBER, PAIRS_TRADED, BUDGET
 from portfolio_model import Portfolio
 
 # TODO The Executionfunction should try to minimize trading cost. This Calculation should run during the initialization there must be an initialize function, that calculates current relevant measures for the execution model and possibly the Regression.
+# A data base is needed that stores the current Volume weighted cost for each asset. 
+# This is the moment where the initializer function has to be declared as such a calculation should be made
+# prior to trading. 
+# A simple CSV is enough - it should be loaded into memory - Redis ?
+# We can use the distirbution of minute to minute price differences to estimate the slippage for each trade.
+# We can assign a probability to each of the possible price jumps and calculate an expected price jump that should be compensated
+# by the expected return.
+
 # TODO implement controls through terminal
+# TODO Ask or Bid should be used correctly when determining if an adjustment would make sense - not all positions are positive. NOTE: ib_insync could provide a solution for that.
 
 # Check if a connection exists already
 if not ib.isConnected():

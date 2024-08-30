@@ -155,9 +155,10 @@ class Portfolio:
             ticker = position.contract.symbol
 
             # Get the average price that was realized while creating the position.
-            buy_in = position.avgCost
+            buy_in = position.avgCost  # TODO Is there a sign given ?
 
             # Get the current price of the Asset.
+            #current_price_bid = self.followed_signals[ticker][3][ticker].bid
             current_price = self.followed_signals[ticker][3][ticker].ask
             # TODO As the pairs are available the realtime price could be used.
             # Calculate the current pnl of the position and safe it.
