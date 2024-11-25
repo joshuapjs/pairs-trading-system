@@ -3,28 +3,34 @@ This module contains the Pairs class to effectively access the data
 and related operations of each Pair that is traded.
 """
 import ib_insync
-import asyncio as aio
 from tws_connection import ib, build_connection
+from constants import MARKET_DATA_TYPE
 
-# Check if a connection exists already
 if not ib.isConnected():
     build_connection()
 
 all_data = dict()
 
-
 class Pair:
     """
-    This class should store the data of each stock that is currently traded.
+    This class stores the data of each stock that is currently traded.
+
+    Each pair that we want to trade is an instance of Pair.
+    The Pair class has all necessary data for evaluations about its attractiveness.
+    The order of ticker_a and ticker_b does not matter, except for the equation,
+    which has to stick to the format
+
+    ticker_a = const + slope * ticker_b
+
+    We can correctly determine under- or overvalutation, independend of the mapping
+    as long as the equation is set up correctly.
     """
 
     def __init__(self,
                  tickers: tuple,
                  currency: str,
                  equation: tuple):
-
-        # TODO Prüfen ob es sich lohnen würde zwei unterschiedliche currencies zulassen.
-
+ 
         a, b = tickers
 
         self.tickers: tuple = tickers
@@ -34,18 +40,20 @@ class Pair:
         self.contract_b: ib_insync.contract.Stock = None
         self.quotes_a = None
         self.quotes_b = None
-        self.equation: tuple = equation # (const, slope, threshold)
-        self.currency: str = currency#
+        self.equation: tuple = equation  # (const, slope)
+        self.res_vol = float  # This is not used yet but could contain the volatility of the ratio of the prices.
+        self.currency: str = currency
 
     @staticmethod
     def _collect_data(ticker, currency):
-        # Define the contract - TODO make it dependend on the incoming stock - request the data of the stock remotely
-        # if possible and fill in the request correctly
+
+        # First we connect the ticker to TWS to receive Market Data.
+        # Please change the respective constant in the constants.py file.
+        # More information about the different settings: https://ib-insync.readthedocs.io/api.html#ib_insync.ib.IB.reqMarketDataType
+
         contract = ib_insync.contract.Stock(ticker, "SMART", currency)
-        # Defining the stock contracts alone is not sufficient. The Stock instances need to be qualified.
-        # in order to enable that data can be requested with them.
         ib.qualifyContracts(contract)
-        ib.reqMarketDataType(3)  # TODO Comment if Live Data subscription
+        ib.reqMarketDataType(MARKET_DATA_TYPE)
         data = ib.reqMktData(contract)
         return data, contract
 
@@ -59,4 +67,4 @@ class Pair:
 
     def export_essentials(self):
         return self.tickers, self.currency
-    
+

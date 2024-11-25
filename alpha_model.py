@@ -2,10 +2,9 @@
 This Module contains the functions that are need to determine if a 
 trading opportunity based on the strategy is present.
 """
-import ib_insync
 import copy
 import math
-import data_connector as dc
+import logger as log
 from tws_connection import ib, build_connection
 
 # Check if a connection exists already
@@ -13,24 +12,35 @@ if not ib.isConnected():
     build_connection()
 
 
-def generate_signals(pairs):  # Pairs trading logic ist the Research based insight about selected pairs
-    # Hier muss ein Threshold berechnet werden. Wo befinden wir uns,
-    # bei Betrachtung der stationären Zeitreihe die Divergenz der Returns darstellt?
+def generate_signals(pairs, threshold):
+    """
+    Function to do the calculation generating a signal.
+    :param pairs: A Pairs class object carrying all the necessary data.
+    """
     new_signals = {}
     pairs_traded = {}
 
     for pair in pairs:
-        const, slope, threshold = pair.equation
-        estimate = const + slope * pair.quotes_b.dict()["ask"]  # TODO Datenzugriff ist ungetestet
-        delta = pair.quotes_a.dict()["ask"] - estimate
-        if abs(delta) > threshold:
-            # assign priority based on strength of deviation
-            # TODO find a better way, maybe in terms of the distribution of the variable
-            deviation = (delta - threshold) / threshold
+        const, slope = pair.equation
+        estimate = const + slope * pair.quotes_b.dict()["ask"]
+
+        # Calculate the Divergence from the estimation and Ask-price to get the residual and divide by estimate.
+        delta = (pair.quotes_a.dict()["ask"] - estimate) / estimate
+
+        if delta > threshold:
+
+            # Assign priority based on strength of deviation.
+            deviation = abs(delta)
+            print(f"\033[32mALPHA MODEL\033[0m : Deviation = {deviation}; Stock_a = {pair.quotes_a}; Stock_b = {pair.quotes_b};")
+
+            # We safe the sign to find the correct trade diraction later.
             sign = math.copysign(1, delta)
             ticker_a, ticker_b = pair.tickers
+
             pairs_traded[ticker_a] = pair
-            pairs_traded[ticker_b] = pair  # This is memory-wise very inefficient but memory should not be a problem.
+            pairs_traded[ticker_b] = pair
+
+            # new_signals will contain all the information for future evalutation of the Signal.
             new_signals[pair.tickers] = (deviation,
                                          sign,
                                          pair,
@@ -41,5 +51,6 @@ def generate_signals(pairs):  # Pairs trading logic ist the Research based insig
                                          const,
                                          slope,
                                          threshold)
+
     return new_signals, pairs_traded
 

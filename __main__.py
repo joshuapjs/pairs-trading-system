@@ -2,50 +2,55 @@ from data_connector import Pair
 from tws_connection import ib, build_connection
 import execution_model
 import alpha_model
-from constants import ACCOUNT_NUMBER, PAIRS_TRADED, BUDGET
+import logger as log
+from constants import PAIRS_TRADED, BUDGET, CURRENCY, THRESHOLD
+from personal_constants import ACCOUNT_NUMBER
 from portfolio_model import Portfolio
 
-# TODO The Executionfunction should try to minimize trading cost. This Calculation should run during the initialization there must be an initialize function, that calculates current relevant measures for the execution model and possibly the Regression.
-# A data base is needed that stores the current Volume weighted cost for each asset. 
-# This is the moment where the initializer function has to be declared as such a calculation should be made
-# prior to trading. 
-# A simple CSV is enough - it should be loaded into memory - Redis ?
-# We can use the distirbution of minute to minute price differences to estimate the slippage for each trade.
-# We can assign a probability to each of the possible price jumps and calculate an expected price jump that should be compensated
-# by the expected return.
-
-# TODO implement controls through terminal
-# TODO Ask or Bid should be used correctly when determining if an adjustment would make sense - not all positions are positive. NOTE: ib_insync could provide a solution for that.
-
-# Check if a connection exists already
 if not ib.isConnected():
     build_connection()
 
+# For all Pairs a subscription to the data from TWS has to be made when the program start.
 def connect_pairs(pairs):
     for pair in pairs:
         pair.connect_data()
 
 if __name__ == "__main__":
+    # The log will not be pushed to the repo so it must be ensured that it exists, before the program can start.
+    log.initialize_logger()
+    ib.sleep(5)
+
     portfolio = Portfolio(account_number=ACCOUNT_NUMBER, slots=PAIRS_TRADED, budget=BUDGET)
-    # TODO Replace test data with real data.
-    test_pairs = [Pair(("AAPL", "MSFT"), "USD", (1,1,1)),
-                  Pair(("GM", "TSLA"), "USD", (1,1,1)),
-                  Pair(("AMZN", "CPNG"), "USD", (1,1,1))]
+
+    # TODO: The test data obviously has to be replaced by real data.
+    # For further explaination about the Pairs class, please refer to the data_connector module.
+    test_pairs = [Pair(("AAPL", "MSFT"), CURRENCY, (1,1)),
+                  Pair(("GM", "TSLA"), CURRENCY, (1,1)),
+                  Pair(("AMZN", "CPNG"), CURRENCY, (1,1))]
 
     connect_pairs(test_pairs)
     ib.sleep(3)
-    
-    signals = alpha_model.generate_signals(test_pairs)
-
-    # Erstelle das Initale Portfolio
-    initial_execution = portfolio.analyze_signals(signals)
-    execution_model.execute_portfolio_adjustments(portfolio, initial_execution)
 
     while True:
+        """
+        The logic follows iteratively that same pattern.
+
+        1. Generate new Signals for each of the Pairs that are currently traded.
+        2. The Signals generated in 1. have to be evaulated by the portfolio.analyze_signals method.
+        3. During the analysis, instructions about what the new positions should look like, were created.
+           Those will be directed to the Execution Model in the next step.
+        4. In the last step, current positions and Signals that could not be followed, because the maximum amount of trades 
+           we want to be in at the same time was reached, will be analyzed and the portfolio adjusted if a position fullfilled its
+           predicted potential or if the position is blocking a better opportunity.
+
+        """
         ib.sleep(10)
+        signals = alpha_model.generate_signals(test_pairs, threshold=THRESHOLD)
+        portfolio_changes = portfolio.analyze_signals(signals) 
+        execution_model.execute_portfolio_adjustments(portfolio, portfolio_changes)
         new_adjustments = portfolio.optimize()
         execution_model.execute_portfolio_adjustments(portfolio, new_adjustments)
 
 else:
-    raise ImportError("This module is not for external use")
+    raise ImportError("THE MODULE __main__.py IS NOT INTENDED TO BE IMPORTED")
 

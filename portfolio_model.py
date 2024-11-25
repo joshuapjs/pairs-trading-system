@@ -2,88 +2,89 @@
 This module contains the relevant functions to size the current positions that should be taken,
 according to the alpha_model properly.
 """
-import os
 import copy
+import sqlite3
 from data_connector import Pair
 from tws_connection import ib, build_connection
-import pandas as pd
+from constants import PATH, DATABASE_NAME, MINIMUM_TRADE_COST, COST_PER_SHARE, CURRENCY
 
-
-# Check if a connection exists already
 if not ib.isConnected():
     build_connection()
 
-
 class Portfolio:
     """
-    This class is used to manage the current Portfolio.
+    This class is used for the Portfoliomanagement of the different Pair-Trades.
+
+    The Portfolio class is able to analyze signals and decide if a Signal should be followed and can store signals
+    that had to be ignored if there was no free slot. As all postions are intended to produce Alpha I 
+    decided to use equal weighting. A free slot is an opportunity that a trade can be made.
+
+    The amount of capital allocated to each slot can be calculated through: budget / slots.
+    
+    A Portfolio is also able to optimize itself be checking if current performance of a trade already
+    fullfilled its expectations or if a trade is blocking a better opportunity. The methods are  greedy 
+    in the sense that they try to fill all slots by optimizing for what is calculated as the delta
+    by the alpha_model (deviation from the equilibrium of two stock), which is effectively the expected 
+    return because we want to capitalize on the fluctuation of difference of stock prices from their equilibrium.
     """
 
     def __init__(self, account_number,
-                 slots, 
+                 slots,
                  budget):
 
         self.profile = account_number
-        # Check if a session is logged, if true, loads the session.
-        path = "./log/followed_signals_log.csv"
-        log_df = pd.read_csv(path)
-        if not log_df.empty:
-            self.followed_signals = log_df.to_dict() 
-            for ticker, raw_log_string in self.followed_signals.items():
-                deviation, sign, pair, const, slope, threshold = eval(raw_log_string)
-                tickers, currency = pair
-                current_pair = Pair(tickers, currency, (const, slope, threshold))
-                current_pair.connect_data()
-                recovered_signal = (deviation, sign, pair, {ticker_a: copy.copy(pair.quotes_a),
-                                                            ticker_b: copy.copy(pair.quotes_b)
-                                                            },
-                                    const,
-                                    slope,
-                                    threshold)
-                self.followed_signals[ticker] = recovered_signal
-
-        else:
-            self.followed_signals = {}
-
         self.ignored_signals = {}
-        self.all_slots = slots
-        self.empty_slots = self.all_slots - (len(self.followed_signals) / 2)  # Each signal involves two stocks.
         self.budget = budget
-        self.position_pnl = {}
+        self.tws_positions = [] 
         self.pairs_traded = {}
-        if ib.positions(account_number):
-            self.portfolio = {}
-            current_positions = ib.positions(account_number)
-            for position in current_positions:
-                ticker = position.account
+        self.portfolio = {}
+        self.followed_signals = {}
+        if ib.portfolio():
+            for position in ib.portfolio():
+                ticker = position.contract.symbol
                 shares = position.position
                 self.portfolio[ticker] = shares
-                
 
-    def create_new_log(self):
-        """
-        To log properly which signal was followed the class "pair" must be exported,
-        otherwise the reference is saved and the information lost.
-        """
-        log = {}
-        for ticker, signal in self.followed_signals.items():
-            deviation, sign, pair, quotes, const, slope, threshold = signal
-
-            # Conection to quotes has to be reestablished at a later point in time.
-            signal_log_version = (deviation, sign, pair.export(), const, slope, threshold)
-
-            log[ticker] = signal_log_version
-            
-        pd.DataFrame(log).to_csv(r"./log/followed_signals_log.csv")
+        if self.portfolio:
+            for ticker in list(self.portfolio.keys()):
+                # As we only log trades that were actually made we can use the SQLite file as our memory of positions that have
+                # been taken in the past.
+                try:
+                    with sqlite3.connect(PATH + DATABASE_NAME) as log:
+                        cur = log.cursor()
+                        execution_command = """SELECT * FROM Signals WHERE Ticker_a = ? OR Ticker_b = ?""" \
+                                            """ ORDER BY Time DESC LIMIT 1;"""
+                        cur.execute(execution_command, (ticker, ticker))
+                        data = cur.fetchone()
+                        if data is None:
+                            print(f"\033[32mPORTFOLIO MODEL\033[0m : No Signal to retrieve for {ticker};")
+                            self.followed_signals[ticker] = tuple()
+                        else:
+                            current_time, deviation, sign, ticker_a, ticker_b, const, slope, threshold = data
+                            pair = Pair((ticker_a, ticker_b), CURRENCY, (slope, const))
+                            pair.connect_data()
+                            self.followed_signals[ticker] = (deviation, sign, pair, {ticker_a: copy.copy(pair.quotes_a), ticker_b: copy.copy(pair.quotes_b)},
+                                                             const, slope, threshold)
+                            print(f"\033[32mPORTFOLIO MODEL\033[0m : Signal retrieval for {ticker} from {current_time} successful;")
+                except sqlite3.OperationalError as e:
+                    print("\033[32mPORTFOLIO MODEL\033[0m : Signal retrieval failed due to database error;")
+                    print(e)
+        else:
+            self.followed_signals = {}
+            print("\033[32mPORTFOLIO MODEL\033[0m : No positions in tws detected - No followed signals should be loaded;")
+        self.all_slots = slots
+        initial_slot_value = self.all_slots - (len(self.portfolio.keys()) / 2)
+        print(f"\033[32mPORTFOLIO MODEL\033[0m : Slot value detected with {initial_slot_value};")
+        self.empty_slots = copy.copy(initial_slot_value) # Each signal involves two stocks.
 
 
     def analyze_signals(self, alpha_model_output):
         """
-        Receives new Signals generated by alpha_model and determines how they will be handled.
+        Receives new signals generated by alpha_model and determines how they will be handled.
         :param alpha_model_output: List of signals generated by the alpha model.
         :return: Execution update (Information for the Execution Model which transactions to do)
         """
-        new_signals, pairs = alpha_model_output  # TODO find a better name this sounds stupid.
+        new_signals, pairs = alpha_model_output
         portfolio_adjustment = {}
 
         # Retrieve and sort the signals generated by the alpha model.
@@ -94,126 +95,180 @@ class Portfolio:
 
         if signals == []:
             return {}
-
-        # store the pairs traded by the model to access market data.
-        self.pairs_traded.update(pairs)
         
+        # Get a list of all ticker symbols that are already in the portfolio.
+        symbols = [pos for pos in self.portfolio if self.portfolio[pos] > 0]
+
+        # Store the pairs traded by the model to access market data.
+        self.pairs_traded.update(pairs)
+
         signals.sort(key=lambda a: a[0], reverse=True)
-        # Calculate the amounts of shares need for each trade as long as there are still slots open.
-        # Slot is the wording for each budget that can be traded on a pair. The risk strategy is at this point
-        # equal weighting.
+        # Calculate the amounts of shares needed for each trade as long as there are still slots open.
         for signal in signals:
-            # Calculation of the amount of shares for each stock.
 
-            # First we unpack each signal.
             deviation, sign, pair, quotes, const, slope, threshold = signal
-            if self.empty_slots > 0:  # TODO it should be factored in how (im)probable the deviation is! Through Percentile in the distribution.
-                # TODO The Ignored signals should be compared too, while discriminating after timeliness.
-                ticker_a, ticker_b = pair.tickers
-                # Formel zur Berechnung des Anteils von b.
-                shares_b = ((self.budget / self.all_slots - const * quotes[ticker_a].ask) *
-                            (1 / (slope * quotes[ticker_a].ask + quotes[ticker_b].ask)))
-                shares_a = const + slope * shares_b
-                # Preparation of the output.
-                portfolio_adjustment[ticker_a] = int(shares_a)
-                portfolio_adjustment[ticker_b] = int(shares_b)
-                self.followed_signals[pair.export()[0][0]] = signal
-                self.followed_signals[pair.export()[0][1]] = signal
+            ticker_a, ticker_b = pair.tickers
+
+            # We want to skip signals that involve Stocks that are already in the portfolio.
+            # Those signals should be added to the ignored signals immediately.
+            if not set(symbols).isdisjoint(set([ticker_a, ticker_b])):
+                self.ignored_signals[pair.export_essentials()[0][0]] = signal
+                self.ignored_signals[pair.export_essentials()[0][1]] = signal
+                print(f"""\033[32mPORTFOLIO MODEL\033[0m : Signal will be IGNORED - there is a similar trade in progress; """ \
+                      f"""ticker_a = {ticker_a}; ticker_b = {ticker_b};""")
+                continue
+
+            # This formula is a result of a linear system of equations that was solved for each amount of shares.
+            shares_b = ((self.budget / self.all_slots - const * quotes[ticker_a].ask) *
+                        (1 / (slope * quotes[ticker_a].ask + quotes[ticker_b].ask)))
+            shares_a = const + slope * shares_b
+
+            if self.empty_slots > 0:
+                if sign > 0:
+                    portfolio_adjustment[ticker_a] = -1 * int(shares_a)
+                    portfolio_adjustment[ticker_b] = int(shares_b)
+                else:
+                    portfolio_adjustment[ticker_a] = int(shares_a)
+                    portfolio_adjustment[ticker_b] = -1 * int(shares_b)
+                self.followed_signals[pair.export_essentials()[0][0]] = signal
+                self.followed_signals[pair.export_essentials()[0][1]] = signal
                 self.empty_slots -= 1
+                print(f"""\033[32mPORTFOLIO MODEL\033[0m : New Signal will be ADDED to the Portfolio; """ \
+                      f"""ticker_a = {ticker_a}, with {int(shares_a)} shares; ticker_b = {ticker_b}, with {int(shares_b)} shares;""")
+                # Time will be logged by the logger function itself.
+                log.log_signal(deviation, sign, ticker_a, ticker_b, const, slope, threshold)
             else:
-                self.ignored_signals[frozenset(pair.export()[0][0])] = signal
-                self.ignored_signals[frozenset(pair.export()[0][1])] = signal
-                break
-
-        self.create_new_log()
-
+                self.ignored_signals[pair.export_essentials()[0][0]] = signal
+                self.ignored_signals[pair.export_essentials()[0][1]] = signal
+                print(f"\033[32mPORTFOLIO MODEL\033[0m : New Signal will be IGNORED - No slot avaliable; ticker_a = {ticker_a}, with {int(shares_a)} shares;" \
+                                                                                    f"ticker_b = {ticker_b}, with {int(shares_b)} shares;")
         return portfolio_adjustment
 
-
     def optimize(self):
+        print("\033[32mPORTFOLIO MODEL\033[0m : Start Portfolio optimization;")
         portfolio_adjustment = {}
 
-        # Get the current positions from IBKR.
-        current_positions = ib.positions(self.profile)
+        # First we gather the current positions directly from TWS if any exist.
+        if ib.portfolio() == []:
+            print("\033[32mPORTFOLIO MODEL\033[0m : No Portfolio detected;")
+            return {}  # This is crucial because the execution_model requires a dict as input and the output of this method is supposed to flow into it.
+        else:
+            self.tws_positions = ib.portfolio()
 
-        # Exception if there is no portfolio to optimize.
-        if current_positions == []:
-            return {}  # This is crucial because the execution_model requires a dict as input.
-        # Get the current signals that where discovered but not followed yet.
+        symbols = [pos.contract.symbol for pos in self.tws_positions]
+
         current_ignored_signals = list(copy.copy(list(self.ignored_signals.values())))
+        # We sort the ignored_signals in descending order (biggest element first) after their "deviation" parameter, the expected return.
         current_ignored_signals.sort(key=lambda a: a[0], reverse=True)
 
-        # Instantiate a new list to gather the signals that 
-        # should be followed in following optimization process.
+        if current_ignored_signals == []:
+            print("\033[32mPORTFOLIO MODEL\033[0m : No signals detected that were ignored;")
+            return {}
+
         signals_to_follow = []
-       
-        # First the pnl of the positions has the be calculated
-        # as there is no out-of-the-box support.
-        for position in current_positions:
 
-            # Get the ticker of the current position looked at.
-            ticker = position.contract.symbol
+        # We create a set to skip symbols from the symbols list we already looked at.
+        visited_symbols = set() 
 
-            # Get the average price that was realized while creating the position.
-            buy_in = position.avgCost  # TODO Is there a sign given ?
+        for symbol in symbols:
+            if symbol in visited_symbols:
+                continue
 
-            # Get the current price of the Asset.
-            #current_price_bid = self.followed_signals[ticker][3][ticker].bid
-            current_price = self.followed_signals[ticker][3][ticker].ask
-            # TODO As the pairs are available the realtime price could be used.
-            # Calculate the current pnl of the position and safe it.
-            current_pnl = (current_price - buy_in) / buy_in
-            self.position_pnl[ticker] = current_pnl
+            signal_for_symbol = self.followed_signals[symbol]
 
-        stocks_to_check = copy.copy(self.followed_signals)
-        
-        # Now the pnls have to be aggregated for each signal that was followed
-        # and has to be compared to the projected pnl.
-        for signal in list(stocks_to_check.values()):
+            deviation, sign, pair, quotes, const, slope, threshold = signal_for_symbol
+            tickers = tuple(quotes.keys())
 
-            # Get the tickers for both positions.
-            deviation, sign, pair, quotes, const, slope, threshold = signal  # TODO Eigentlich muss dass nicht entpackt werden.
-            tickers, currency = pair
+            absolute_earnings = 0.00
+            allocated_capital = self.budget / self.all_slots
+
+            ignored_signals_index = 0
             ticker_a, ticker_b = tickers
+            replacement_signal = current_ignored_signals[ignored_signals_index]
+            ignored_ticker_a, ignored_ticker_b = tuple(replacement_signal[3].keys())
+            opportunity_cost = replacement_signal[0]
 
-            # Get the projected retorn of the signal.
-            expected_return = deviation
-            current_pnl = self.position_pnl[ticker_a] + self.position_pnl[ticker_b]
-            expected_potential = expected_return - current_pnl
+            # Signals should only be those considered that involve stocks that are not in the portfolio already.
+            # Otherwise we could run into the situation that we try to replace a position with itself.
+            # In this case we set the opportunity cost to 0.
+            for signal in current_ignored_signals:
+                replacement_signal = current_ignored_signals[ignored_signals_index]
+                ignored_ticker_a, ignored_ticker_b = tuple(signal[3].keys())
+                if set(symbols).isdisjoint(set([ignored_ticker_a, ignored_ticker_b])):
+                    break
+            else:
+                print(f"""\033[32mPORTFOLIO MODEL\033[0m : {ticker_a} and {ticker_b} have no alternative signal""" \
+                    f""" as a replacement that is not their own signal.""" \
+                    f""" Opportinity Costs are therefore zero;""")
+                opportunity_cost = 0
 
-            if expected_potential <= 0:
+            for ticker in tickers:
+                visited_symbols.add(ticker)
+                index = symbols.index(ticker)
+
+                cost_to_trade = MINIMUM_TRADE_COST if MINIMUM_TRADE_COST >= (COST_PER_SHARE * self.tws_positions[index].position) \
+                                                                        else (COST_PER_SHARE * self.tws_positions[index].position)
+                
+                pnl_of_trade = self.tws_positions[index].unrealizedPNL
+
+                # Two transactions are necessary because we need to buy and sell.
+                absolute_earnings += 2 * cost_to_trade
+                absolute_earnings += pnl_of_trade
+
+            # Relative Earnings can now be compared if the match with the expected return so if the reversal is done or not.
+            relative_earnings = absolute_earnings / allocated_capital
+            potential = deviation - relative_earnings
+
+            if relative_earnings >= deviation:
+
+                print(f"""\033[32mPORTFOLIO MODEL\033[0m : Profitable trade of {ticker_a} and {ticker_b} will be liquidated """ \
+                      f"""as it surpassed it expected return;""")
+
+                # If the unrealized return tops or fulfills the expectations the position should be closed.
+                portfolio_adjustment[ticker_a] = 0
+                portfolio_adjustment[ticker_b] = 0
+                # As the position should be clear we can increase the amount of free slots.
+                # If this program will ever run with some kind of concurrency, the state the program is in when this is changed
+                # needs to be taken into considreation.
+                self.empty_slots += 1  
+
+                # The Signal must be removed from the followed signals list.
+                self.followed_signals.pop(ticker_a)
+                self.followed_signals.pop(ticker_b)
+                continue
+
+            elif relative_earnings > 0 and potential < opportunity_cost:
+                print(f"""\033[32mPORTFOLIO MODEL\033[0m : Profitable trade of {ticker_a} and {ticker_b} will be liquidated """ \
+                      f"""because it blocks a more profitable trade;""")
 
                 # If the unrealized return tops or fulfills the prognosis the position should be cleared.
                 portfolio_adjustment[ticker_a] = 0
                 portfolio_adjustment[ticker_b] = 0
                 self.empty_slots += 1  # As the position ought to be clear we can increase this.
-                continue
 
-            elif expected_potential < current_ignored_signals[0][0] or expected_potential > (expected_return * 1.5):
-
-                # TODO Trading costs are not factored in.
-                # TODO Threshold how much divergence is okay must be given. Tasks of the Risk Model at some point.
-                portfolio_adjustment[ticker_a] = 0
-                portfolio_adjustment[ticker_b] = 0
-
-                # TODO Should the following really happen here or when new Signals are generated ?
-                # The Signal should be replaced immediately as elif checks if the position is malicious.
-                replacement_signal = current_ignored_signals[0]  # The List with the signals ignored is sorted.
                 signals_to_follow.append(replacement_signal)
                 current_ignored_signals.remove(replacement_signal)
 
-                # The Signal must be removed from the followed signals list.
+                # The Signal must be removed from the followed signals list because it's not follwed anymore.
                 self.followed_signals.pop(ticker_a)
                 self.followed_signals.pop(ticker_b)
 
+                # The replacement Signal must be added to the followed signals list.
+                self.followed_signals[ignored_ticker_a] = self.ignored_signals[ignored_ticker_a]
+                self.followed_signals[ignored_ticker_b] = self.ignored_signals[ignored_ticker_a]
+
                 # The replacement Signal must be removed from the ignored signals list.
-                ignored_ticker_a, ignored_ticker_b = current_ignored_signals[0][2]
-                self.ignored_signals.pop(frozenset([ignored_ticker_a, ignored_ticker_b]))
+                self.ignored_signals.pop(ignored_ticker_a)
+                self.ignored_signals.pop(ignored_ticker_b)
                 continue
 
         # The Model has to calculate the positions size for each signal that should be followed.
-        new_positions = self.analyze_signals((signals_to_follow, {}))  # self.pairs will be updated with {} (der Alpha Model Output soll modelliert werden)
+        # self.pairs_traded will be updated with {} because the Alpha Model added them already pairs_traded and
+        # the purpose of pairs traded is to keep track of the data for each ticker.
+        new_positions = self.analyze_signals((signals_to_follow,
+                                              {}))  
         portfolio_adjustment.update(new_positions)  # This is not the only occasion portfolio_adjustment receives data.
 
-        return portfolio_adjustment
+        print("\033[32mPORTFOLIO MODEL\033[0m : Portfolio optimization finished;")
 
+        return portfolio_adjustment

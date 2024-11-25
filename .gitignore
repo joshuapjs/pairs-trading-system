@@ -1,5 +1,8 @@
 # workspace items are only to support my personal thinking process
 workspace/
-log/*.csv
+dbs/
 .DS_Store
 .idea/
+personal_constants.py
+__pycache__/
+alpha_model.py

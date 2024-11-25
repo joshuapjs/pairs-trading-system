@@ -1,12 +1,58 @@
 """
-This file contains all constants that need to be set. Here is a brief explanation of each Constant:
+This file contains all constants that need to be set, except personal constants explained in the README.md.
+"""
+# General
+# -------
 
-- ACCOUNT_NUMBER: The number of the IBKR Account
-- BUDGET: The budget the model should trade with. It is not recommended to trade with all available assets as this can result in Problems. Furthermore, the application demands that the amount specified as BUDGET is available in US-Dollars.
-- PAIRS_TRADED: The amount of pairs the application will trade in.
+# The Currency traded
+CURRENCY = "USD"
 
+# The value of the whole portfolio
+BUDGET = 500_000.00
+
+# Amount of thed slots which is essentiall the divisor of budget to determine the capital allocated to a trade.
+PAIRS_TRADED = 10
+
+PATH = "./pairs-trading/dbs/"
+
+DATABASE_NAME = "trading_log.db"
+
+THRESHOLD = 0
+
+MARKET_DATA_TYPE = 3
+
+# Trading Cost
+# ------------
+"""
+Please make sure the fees fit to your Situation.
+As far as I am informed for Paper Trading, FIXED is assumed.
+Also, I am based in Germany and Trading Costs AND Regulatory Fees could be different in other countrys.
+
+Source (21.11.2024) : https://www.interactivebrokers.ie/en/pricing/commissions-stocks.php
 """
 
-ACCOUNT_NUMBER = "DU8322667"
-BUDGET = 1000000.
-PAIRS_TRADED = 10
+# Per Order minimum cost are 1.00 for shares (FIXED)
+# Careful, for fractional shares its different.
+MINIMUM_TRADE_COST = 1.00
+
+# Per Order max cost is 1% of the trade value
+MAX_TRADE_COST_PCT = 0.01
+
+# Max absolute value per trade in USD
+# However in case of partial execution each execution is considered one trade.
+MAX_TRADE_COST_ABS = 8.30
+
+COST_PER_SHARE = 0.005
+
+# Regulatory Fees
+# ---------------
+
+# SEC Transaction Fee: USD 0.0000278 * Value of Aggregate Sales
+SEC_TRANS_FEE =  0.0000278
+
+# FINRA Trading Activity Fee: USD 0.000166 * Quantity Sold
+FINRA_TRADING_ACTIVITY_FEE = 0.000166
+
+# FINRA Consolidated Audit Trail Fees: USD 0.000048 * Quantity to 0.0000729 * Quantity
+FINRA_AUDIT_FEES = 0.0000729
+
