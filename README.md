@@ -16,6 +16,9 @@ First of all the Model will generate Signals. In the second step those Signals w
 
 The Trading System is build out of different parts, including an Alpha Model, Execution Model, a Portfolio Model and more. Each Instance will print to the Terminal to inform the user about its most recent actions.
 
+![ScreenRecording2024-11-25at23 36 06-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/04dc37af-c78e-49b1-b407-45532cbbec33)
+
+
 # What is Pairs Trading ? 
 
 Pairs Trading is theoretically a market independed trading strategy. Market independened means, even if stocks in general loose value because e.g. the Economic Situation is unfortunate, the strategy will still be able to generate positive returns. Such returns are called $\alpha$-Returns because in the CAPM (Capital Asset Pricing Model) The returns are captured in the constant of the Regression.
