@@ -25,7 +25,7 @@ The Trading System is build out of different parts, including an Alpha Model, Ex
 Pairs Trading is theoretically a market independent trading strategy. Market independence means that, even in scenarios where the broader market loses value (e.g., due to economic downturns), the strategy aims to generate positive returns by exploiting market inefficiencies, provided the assumptions and pair selection are sound. Such returns are referred to as alpha returns, as they are represented by the intercept in the Capital Asset Pricing Model (CAPM) regression.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/5b593acc-a7cb-4b7f-898a-605ec9e8f5f8" />
+  <img src="https://github.com/user-attachments/assets/1ce93171-2ba3-436f-aa90-5934801b5523" width="300"/>
 </p>
 
 In the CAPM framework, stock returns `R_s` can be explained as a function of market returns `R_m` relative to the risk-free rate `R_f`. While the CAPM has been subject to debate, it remains an influential model for understanding stock performance. Alpha, derived from the intercept of the CAPM regression, refers to returns that are uncorrelated with market movements and is widely used as a measure of excess returns.
