@@ -1,12 +1,21 @@
 # pairs-trading
 
+- [About](#About)
+- [Features](#Features)
+- [What is Pairs Trading?](#what-is-pairs-trading?)
+- [Prerequisites](#Prerequisites)
+- [Usage](#Usage)
+- [License](#License)
+- [Disclaimer](#Disclaimer)
+
+
+# About 
+
 Please first have a look at the [Disclaimer](#Disclaimer)
 
-This is an implementation of a Pairs Trading System written in Python. The Trading System interacts directly with the Trader-Workstation (TWS) from Interactive Brokers. The Project focuses on the technical side and serves an educational purpose only.
+This is an implementation of a Pairs Trading System written in Python. The Trading System interacts directly with the [Trader-Workstation (TWS)](https://www.interactivebrokers.ie/en/trading/tws.php) from [Interactive Brokers](https://www.interactivebrokers.ie/en/home.php). The Project focuses on the technical side and serves an educational purpose only.
 
-I intentionally kept certain parts of the System very rudimentary, e.g. the Execution Model. On the one hand I aspire to implement other Systems using other languages soon (I am happy to receive your Pull request if you want to add something). On the other hand I don't want anyone to come up with the idea to plug his fortune into this System and the further I develop it the more tempting this idea might become I suppose.
-
-This appears to be an ideal time to make the repository public, allowing others with a shared interest in the applications of technology and mathematics in financial markets to discover and leverage this project to inspire their own initiatives.
+I intentionally kept certain parts of the System very rudimentary as this is a prototype and will be further refined by time.
 
 # Features
 
@@ -20,7 +29,7 @@ The Trading System is build out of different parts, including an Alpha Model, Ex
   <img src="https://github.com/user-attachments/assets/04dc37af-c78e-49b1-b407-45532cbbec33" />
 </p>
 
-# What is Pairs Trading ? 
+<h1 id="what-is-pairs-trading?">What is Pairs Trading ?</h1>
 
 Pairs Trading is theoretically a market independent trading strategy. Market independence means that, even in scenarios where the broader market loses value (e.g., due to economic downturns), the strategy aims to generate positive returns by exploiting market inefficiencies, provided the assumptions and pair selection are sound. Such returns are referred to as alpha returns, as they are represented by the intercept in the Capital Asset Pricing Model (CAPM) regression.
 
